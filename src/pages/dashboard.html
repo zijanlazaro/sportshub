@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Sports Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto">
+      <div class="p-6 border-b border-slate-700">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-blue-600 p-2 rounded-lg">
+            <i class="fas fa-basketball-ball text-white"></i>
+          </div>
+          <h1 class="text-xl font-bold">Sports Hub</h1>
+        </div>
+        <p id="userRole" class="text-xs text-slate-400">Loading...</p>
+      </div>
+
+      <nav class="p-4 space-y-2">
+        <a href="#" class="nav-link active block px-4 py-2 rounded-lg bg-blue-600 text-white" data-page="overview">
+          <i class="fas fa-chart-line mr-2"></i> Overview
+        </a>
+        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="players">
+          <i class="fas fa-users mr-2"></i> Players
+        </a>
+        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="training">
+          <i class="fas fa-dumbbell mr-2"></i> Training
+        </a>
+        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="medical">
+          <i class="fas fa-hospital mr-2"></i> Medical
+        </a>
+        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="schedule">
+          <i class="fas fa-calendar mr-2"></i> Schedule
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700 mt-auto">
+        <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Top Bar -->
+      <div class="bg-slate-800 border-b border-slate-700 p-6 flex justify-between items-center sticky top-0 z-50">
+        <h2 id="pageTitle" class="text-2xl font-bold">Dashboard</h2>
+        <div class="flex items-center gap-4">
+          <button id="darkModeToggle" class="text-slate-400 hover:text-white">
+            <i class="fas fa-moon"></i>
+          </button>
+          <div id="userMenu" class="relative">
+            <button id="userMenuBtn" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-700 rounded-lg transition">
+              <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <span id="userName">User</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page Content -->
+      <div class="p-6">
+        <!-- Overview Page -->
+        <div id="overviewPage" class="page-content">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-slate-400 text-sm">Total Players</p>
+                  <p class="text-3xl font-bold" id="totalPlayers">-</p>
+                </div>
+                <i class="fas fa-users text-blue-500 text-3xl"></i>
+              </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-slate-400 text-sm">Active Injuries</p>
+                  <p class="text-3xl font-bold" id="activeInjuries">-</p>
+                </div>
+                <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+              </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-slate-400 text-sm">Trainings This Week</p>
+                  <p class="text-3xl font-bold" id="upcomingTrainings">-</p>
+                </div>
+                <i class="fas fa-dumbbell text-green-500 text-3xl"></i>
+              </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-slate-400 text-sm">Avg Attendance</p>
+                  <p class="text-3xl font-bold" id="avgAttendance">-%</p>
+                </div>
+                <i class="fas fa-chart-pie text-purple-500 text-3xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <h3 class="text-lg font-semibold mb-4">
+                <i class="fas fa-history mr-2"></i> Recent Players
+              </h3>
+              <div id="recentPlayers" class="space-y-2">
+                <p class="text-slate-400">Loading...</p>
+              </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <h3 class="text-lg font-semibold mb-4">
+                <i class="fas fa-calendar-alt mr-2"></i> Upcoming Events
+              </h3>
+              <div id="upcomingEvents" class="space-y-2">
+                <p class="text-slate-400">Loading...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Players Page -->
+        <div id="playersPage" class="page-content hidden">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Team Players</h3>
+            <button id="addPlayerBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+              <i class="fas fa-plus mr-2"></i> Add Player
+            </button>
+          </div>
+
+          <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+            <table class="w-full">
+              <thead class="bg-slate-700 border-b border-slate-600">
+                <tr>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">#</th>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">Name</th>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">Position</th>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">Age</th>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">Games</th>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">Points</th>
+                  <th class="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="playersTableBody" class="divide-y divide-slate-700">
+                <tr class="hover:bg-slate-700 transition">
+                  <td class="px-6 py-3 text-slate-400">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Training Page -->
+        <div id="trainingPage" class="page-content hidden">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Training Sessions</h3>
+            <button id="addTrainingBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
+              <i class="fas fa-plus mr-2"></i> New Session
+            </button>
+          </div>
+
+          <div id="trainingList" class="space-y-4">
+            <p class="text-slate-400">Loading...</p>
+          </div>
+        </div>
+
+        <!-- Medical Page -->
+        <div id="medicalPage" class="page-content hidden">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Medical Records</h3>
+            <button id="addMedicalBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+              <i class="fas fa-plus mr-2"></i> New Record
+            </button>
+          </div>
+
+          <div id="medicalList" class="space-y-4">
+            <p class="text-slate-400">Loading...</p>
+          </div>
+        </div>
+
+        <!-- Schedule Page -->
+        <div id="schedulePage" class="page-content hidden">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Calendar & Schedule</h3>
+            <button id="addEventBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">
+              <i class="fas fa-plus mr-2"></i> New Event
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-slate-800 rounded-lg border border-slate-700 p-6">
+              <div id="calendarView">
+                <!-- Calendar will be generated here -->
+              </div>
+            </div>
+            <div class="bg-slate-800 rounded-lg border border-slate-700 p-6">
+              <h4 class="font-semibold mb-4">Upcoming</h4>
+              <div id="scheduleList" class="space-y-3">
+                <p class="text-slate-400">Loading...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading & Error States -->
+        <div id="loadingSpinner" class="hidden text-center py-12">
+          <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+          <p class="mt-4 text-slate-400">Loading...</p>
+        </div>
+
+        <div id="errorAlert" class="hidden bg-red-900 border border-red-700 rounded-lg p-4 text-red-200"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { authManager } from '../js/auth.js';
+    import { getTeamPlayers } from '../js/players.js';
+    import { getTeamTrainingSessions, getTeamEvents } from '../js/training.js';
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    // Initialize
+    async function init() {
+      const unsubscribe = authManager.subscribe(async (user, profile) => {
+        currentUser = user;
+        currentProfile = profile;
+
+        if (!user) {
+          window.location.href = '/src/pages/login.html';
+          return;
+        }
+
+        updateUI();
+        loadDashboardData();
+      });
+
+      // Check if already logged in
+      if (authManager.getUser()) {
+        currentUser = authManager.getUser();
+        currentProfile = authManager.getProfile();
+        updateUI();
+        loadDashboardData();
+      }
+
+      authManager.init();
+    }
+
+    function updateUI() {
+      document.getElementById('userName').textContent = currentProfile?.full_name || 'User';
+      document.getElementById('userRole').textContent = (currentProfile?.role || 'user').toUpperCase();
+    }
+
+    async function loadDashboardData() {
+      try {
+        if (!currentProfile?.team_id) {
+          document.getElementById('totalPlayers').textContent = '0';
+          return;
+        }
+
+        const players = await getTeamPlayers(currentProfile.team_id);
+        document.getElementById('totalPlayers').textContent = players.length;
+
+        // Update recent players list
+        const recentList = document.getElementById('recentPlayers');
+        if (players.length > 0) {
+          recentList.innerHTML = players.slice(0, 5).map(p =>
+            `<p class="text-sm"><span class="text-blue-400">#${p.jersey_number}</span> ${p.first_name} ${p.last_name} - ${p.position}</p>`
+          ).join('');
+        } else {
+          recentList.innerHTML = '<p class="text-slate-400">No players added yet</p>';
+        }
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+      }
+    }
+
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        document.querySelectorAll('.nav-link').forEach(l => {
+          l.classList.remove('active', 'bg-blue-600', 'text-white');
+          l.classList.add('hover:bg-slate-700');
+        });
+
+        link.classList.add('active', 'bg-blue-600', 'text-white');
+        link.classList.remove('hover:bg-slate-700');
+
+        const page = link.dataset.page;
+        showPage(page);
+      });
+    });
+
+    function showPage(page) {
+      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+      const pageElement = document.getElementById(page + 'Page');
+      if (pageElement) {
+        pageElement.classList.remove('hidden');
+        updatePageTitle(page);
+      }
+    }
+
+    function updatePageTitle(page) {
+      const titles = {
+        overview: 'Dashboard',
+        players: 'Team Players',
+        training: 'Training Sessions',
+        medical: 'Medical Records',
+        schedule: 'Schedule & Events'
+      };
+      document.getElementById('pageTitle').textContent = titles[page] || 'Sports Hub';
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await authManager.logout();
+        window.location.href = '/src/pages/login.html';
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sports Hub - Athlete Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100">
+  <!-- Navigation -->
+  <nav class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-600 p-2 rounded-lg">
+            <i class="fas fa-basketball-ball text-white text-xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold">Sports Hub</h1>
+        </div>
+        <div class="flex gap-4">
+          <a href="/src/pages/login.html" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg transition">
+            Login
+          </a>
+          <a href="/src/pages/login.html" class="border border-blue-600 text-blue-400 hover:bg-slate-700 px-6 py-2 rounded-lg transition">
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="text-center">
+      <h2 class="text-5xl font-bold mb-6">
+        Athlete Management Made Simple
+      </h2>
+      <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
+        Sports Hub is a comprehensive thesis-level athlete management and analytics system designed for sports teams, coaches, and medical staff to track, manage, and analyze athlete data efficiently.
+      </p>
+      <div class="flex gap-4 justify-center">
+        <a href="/src/pages/login.html?tab=register" class="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-lg font-semibold transition">
+          Get Started
+        </a>
+        <a href="#features" class="border border-slate-600 hover:bg-slate-700 px-8 py-3 rounded-lg transition">
+          Learn More
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <h3 class="text-3xl font-bold text-center mb-12">Key Features</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Feature 1 -->
+      <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:border-blue-500 transition">
+        <div class="text-3xl text-blue-500 mb-4">
+          <i class="fas fa-users"></i>
+        </div>
+        <h4 class="text-lg font-semibold mb-2">Player Management</h4>
+        <p class="text-slate-400">
+          Create and manage comprehensive player profiles including personal data, jersey numbers, positions, and physical metrics.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:border-green-500 transition">
+        <div class="text-3xl text-green-500 mb-4">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h4 class="text-lg font-semibold mb-2">Performance Analytics</h4>
+        <p class="text-slate-400">
+          Track player statistics including games played, points scored, assists, and performance trends over time.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:border-red-500 transition">
+        <div class="text-3xl text-red-500 mb-4">
+          <i class="fas fa-hospital"></i>
+        </div>
+        <h4 class="text-lg font-semibold mb-2">Medical Records</h4>
+        <p class="text-slate-400">
+          Maintain detailed injury history, medical notes, recovery status, and clearance documentation for each player.
+        </p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:border-yellow-500 transition">
+        <div class="text-3xl text-yellow-500 mb-4">
+          <i class="fas fa-dumbbell"></i>
+        </div>
+        <h4 class="text-lg font-semibold mb-2">Training Attendance</h4>
+        <p class="text-slate-400">
+          Create training sessions and track attendance with status options: Present, Absent, or Excused.
+        </p>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:border-purple-500 transition">
+        <div class="text-3xl text-purple-500 mb-4">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h4 class="text-lg font-semibold mb-2">Event Scheduling</h4>
+        <p class="text-slate-400">
+          Schedule and manage games, training sessions, and team events with status tracking and calendar views.
+        </p>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 hover:border-indigo-500 transition">
+        <div class="text-3xl text-indigo-500 mb-4">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h4 class="text-lg font-semibold mb-2">Role-Based Access</h4>
+        <p class="text-slate-400">
+          Role-based security with Admin, Coach, Medical Staff, and Player roles using Supabase Row Level Security.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section class="bg-slate-800 border-t border-slate-700 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h3 class="text-3xl font-bold text-center mb-12">Tech Stack</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-5xl text-yellow-500 mb-4">
+            <i class="fab fa-html5"></i>
+          </div>
+          <h4 class="font-semibold mb-2">Frontend</h4>
+          <p class="text-slate-400">HTML5, JavaScript ES6+, Tailwind CSS</p>
+        </div>
+
+        <div class="text-center">
+          <div class="text-5xl text-blue-500 mb-4">
+            <i class="fas fa-database"></i>
+          </div>
+          <h4 class="font-semibold mb-2">Database</h4>
+          <p class="text-slate-400">Supabase (PostgreSQL, Real-time)</p>
+        </div>
+
+        <div class="text-center">
+          <div class="text-5xl text-green-500 mb-4">
+            <i class="fas fa-lock"></i>
+          </div>
+          <h4 class="font-semibold mb-2">Authentication</h4>
+          <p class="text-slate-400">Supabase Auth, RLS Policies</p>
+        </div>
+
+        <div class="text-center">
+          <div class="text-5xl text-red-500 mb-4">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h4 class="font-semibold mb-2">Hosting</h4>
+          <p class="text-slate-400">Netlify (Static Site)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="bg-gradient-to-r from-blue-600 to-green-600 rounded-lg p-12 text-center">
+      <h3 class="text-3xl font-bold mb-4">Ready to Get Started?</h3>
+      <p class="text-lg mb-8 opacity-90">
+        Join Sports Hub and take your athlete management to the next level
+      </p>
+      <a href="/src/pages/login.html?tab=register" class="bg-white text-blue-600 hover:bg-slate-100 px-8 py-3 rounded-lg font-semibold transition inline-block">
+        Create Your Account Today
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-800 border-t border-slate-700 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="font-semibold mb-4">About</h4>
+          <p class="text-slate-400 text-sm">
+            Sports Hub is a thesis-level project demonstrating full-stack web development with Supabase, JavaScript, and Tailwind CSS.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Features</h4>
+          <ul class="text-slate-400 text-sm space-y-2">
+            <li><a href="#" class="hover:text-white transition">Player Management</a></li>
+            <li><a href="#" class="hover:text-white transition">Medical Records</a></li>
+            <li><a href="#" class="hover:text-white transition">Training Tracking</a></li>
+            <li><a href="#" class="hover:text-white transition">Event Scheduling</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Resources</h4>
+          <ul class="text-slate-400 text-sm space-y-2">
+            <li><a href="#" class="hover:text-white transition">Documentation</a></li>
+            <li><a href="#" class="hover:text-white transition">API Reference</a></li>
+            <li><a href="#" class="hover:text-white transition">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-700 pt-8 text-center text-slate-400 text-sm">
+        <p>&copy; 2026 Sports Hub. Made for thesis purposes. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
