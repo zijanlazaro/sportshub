@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Management - Sports Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100">
+  <div class="min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Team Management</h1>
+        <div class="flex gap-4">
+          <a href="/src/pages/dashboard.html" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">
+            ← Back to Dashboard
+          </a>
+          <button onclick="showModal()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">
+            + Add Team
+          </button>
+        </div>
+      </div>
+
+      <!-- Teams List -->
+      <div id="teamsList" class="grid gap-4">
+        <div class="bg-slate-800 p-4 rounded-lg">
+          <p class="text-slate-400">Loading teams...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-slate-800 p-6 rounded-lg w-96">
+      <h3 class="text-xl font-bold mb-4">Create New Team</h3>
+      <form onsubmit="createTeam(event)">
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Team Name</label>
+          <input type="text" id="teamName" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Sport</label>
+          <select id="teamSport" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+            <option value="Basketball">Basketball</option>
+            <option value="Football">Football</option>
+            <option value="Soccer">Soccer</option>
+            <option value="Baseball">Baseball</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Season</label>
+          <input type="text" id="teamSeason" value="2024" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 py-2 rounded text-white">Create</button>
+          <button type="button" onclick="hideModal()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://guyppjhpjfzrfxldltjz.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4';
+
+    function showModal() {
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function hideModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    async function createTeam(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('teamName').value;
+      const sport = document.getElementById('teamSport').value;
+      const season = document.getElementById('teamSeason').value;
+
+      try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/teams`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            sport: sport,
+            season: season,
+            active: true
+          })
+        });
+
+        if (response.ok) {
+          alert('Team created successfully!');
+          hideModal();
+          loadTeams();
+          // Clear form
+          document.getElementById('teamName').value = '';
+          document.getElementById('teamSeason').value = '2024';
+        } else {
+          alert('Failed to create team');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function loadTeams() {
+      try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/teams?select=*`, {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        
+        const teams = await response.json();
+        const teamsList = document.getElementById('teamsList');
+        
+        if (teams.length === 0) {
+          teamsList.innerHTML = '<div class="bg-slate-800 p-6 rounded-lg text-center text-slate-400">No teams found. Create your first team!</div>';
+        } else {
+          teamsList.innerHTML = teams.map(team => `
+            <div class="bg-slate-800 p-6 rounded-lg">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-xl font-bold">${team.name}</h3>
+                  <p class="text-slate-400">Sport: ${team.sport}</p>
+                  <p class="text-slate-400">Season: ${team.season}</p>
+                </div>
+                <button onclick="deleteTeam('${team.id}')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
+                  Delete
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        document.getElementById('teamsList').innerHTML = `<div class="bg-red-800 p-4 rounded text-red-200">Error: ${error.message}</div>`;
+      }
+    }
+
+    async function deleteTeam(teamId) {
+      if (!confirm('Are you sure you want to delete this team?')) return;
+      
+      try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/teams?id=eq.${teamId}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        
+        if (response.ok) {
+          alert('Team deleted successfully!');
+          loadTeams();
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Load teams when page loads
+    loadTeams();
+  </script>
+</body>
+</html>

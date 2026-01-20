@@ -90,12 +90,21 @@ export async function createTrainingSession(teamId, sessionData, userId) {
 }
 
 /**
- * Update training session
+ * Update training session with session validation
  */
 export async function updateTrainingSession(sessionId, updateData) {
+  // Verify user is authenticated
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Authentication required');
+  }
+
   const { data, error } = await supabase
     .from('training_sessions')
-    .update(updateData)
+    .update({
+      ...updateData,
+      updated_at: new Date().toISOString()
+    })
     .eq('id', sessionId)
     .select()
     .single();
@@ -105,9 +114,22 @@ export async function updateTrainingSession(sessionId, updateData) {
 }
 
 /**
- * Delete training session
+ * Delete training session with session validation
  */
 export async function deleteTrainingSession(sessionId) {
+  // Verify user is authenticated
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Authentication required');
+  }
+
+  // Delete attendance records first
+  await supabase
+    .from('training_attendance')
+    .delete()
+    .eq('training_session_id', sessionId);
+
+  // Delete the session
   const { error } = await supabase
     .from('training_sessions')
     .delete()
@@ -121,9 +143,15 @@ export async function deleteTrainingSession(sessionId) {
 // ============================================================================
 
 /**
- * Update attendance for a player in a training session
+ * Update training attendance with session validation
  */
 export async function updateAttendance(sessionId, playerId, status, notes = '') {
+  // Verify user is authenticated
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error('Authentication required');
+  }
+
   const { data, error } = await supabase
     .from('training_attendance')
     .update({

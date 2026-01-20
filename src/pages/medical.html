@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Dashboard - Sports Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto">
+      <div class="p-6 border-b border-slate-700">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-blue-600 p-2 rounded-lg">
+            <i class="fas fa-basketball-ball text-white"></i>
+          </div>
+          <h1 class="text-xl font-bold">Sports Hub</h1>
+        </div>
+        <p id="userRole" class="text-xs text-slate-400">Loading...</p>
+      </div>
+
+      <nav class="p-4 space-y-2">
+        <a href="/src/pages/dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-chart-line mr-2"></i> Overview
+        </a>
+        <a href="/src/pages/dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-users mr-2"></i> Players
+        </a>
+        <a href="/src/pages/training.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-dumbbell mr-2"></i> Training
+        </a>
+        <a href="#" class="block px-4 py-2 rounded-lg bg-blue-600 text-white">
+          <i class="fas fa-hospital mr-2"></i> Medical
+        </a>
+        <a href="/src/pages/dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-calendar mr-2"></i> Schedule
+        </a>
+        <a href="/src/pages/dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-users-cog mr-2"></i> Manage Teams
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700 mt-auto">
+        <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <header class="bg-slate-800 border-b border-slate-700 p-6">
+        <h1 class="text-2xl font-bold">Medical Dashboard</h1>
+      </header>
+
+      <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Players List -->
+          <div class="bg-slate-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Team Players</h2>
+            <div id="playersList" class="space-y-2">
+              <div class="text-center p-4 text-slate-400">Loading...</div>
+            </div>
+          </div>
+
+          <!-- Medical Records -->
+          <div class="bg-slate-800 rounded-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-xl font-semibold">Medical Records</h2>
+              <button id="addRecordBtn" class="bg-green-600 px-3 py-1 rounded text-sm hover:bg-green-700">
+                <i class="fas fa-plus mr-1"></i>Add
+              </button>
+            </div>
+            <div id="recordsList" class="space-y-2">
+              <div class="text-center p-4 text-slate-400">Select a player</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Record Modal -->
+  <div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4">Add Medical Record</h3>
+      <form id="addForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Player</label>
+            <select id="playerSelect" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+              <option value="">Select Player...</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Date</label>
+            <input type="date" id="recordDate" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Record Type</label>
+            <select id="recordType" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+              <option value="">Select Type...</option>
+              <option value="Physical Examination">Physical Examination</option>
+              <option value="Injury Assessment">Injury Assessment</option>
+              <option value="Pre-Game Clearance">Pre-Game Clearance</option>
+              <option value="Fitness Assessment">Fitness Assessment</option>
+              <option value="Medical Clearance">Medical Clearance</option>
+              <option value="Follow-up">Follow-up</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Severity (if injury)</label>
+            <select id="severity" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+              <option value="">N/A</option>
+              <option value="minor">Minor</option>
+              <option value="moderate">Moderate</option>
+              <option value="severe">Severe</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Blood Pressure</label>
+            <input type="text" id="bloodPressure" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="120/80">
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Heart Rate (bpm)</label>
+            <input type="number" id="heartRate" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="72">
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Temperature (°C)</label>
+            <input type="number" step="0.1" id="temperature" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="36.5">
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Weight (kg)</label>
+            <input type="number" step="0.1" id="weight" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Cleared to Play</label>
+            <select id="clearanceToPlay" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+              <option value="true">Yes - Cleared</option>
+              <option value="false">No - Not Cleared</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm mb-1">Recovery Status</label>
+            <select id="recoveryStatus" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+              <option value="cleared">Cleared</option>
+              <option value="recovering">Recovering</option>
+              <option value="chronic">Chronic</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm mb-1">Medical Findings / Diagnosis</label>
+          <textarea id="recordDesc" class="w-full bg-slate-700 border border-slate-600 rounded p-2" rows="3" required placeholder="Detailed medical findings, diagnosis, and observations..."></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm mb-1">Treatment / Recommendations</label>
+          <textarea id="treatment" class="w-full bg-slate-700 border border-slate-600 rounded p-2" rows="2" placeholder="Treatment plan, medications, restrictions..."></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm mb-1">Restrictions / Limitations</label>
+          <textarea id="restrictions" class="w-full bg-slate-700 border border-slate-600 rounded p-2" rows="2" placeholder="Activity restrictions, limitations, precautions..."></textarea>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <label class="block text-sm mb-1">Expected Return Date</label>
+            <input type="date" id="expectedReturn" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+          </div>
+          <div>
+            <label class="block text-sm mb-1">Follow-up Required</label>
+            <select id="followUpRequired" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Add Record</button>
+          <button type="button" id="cancelBtn" class="bg-slate-600 px-4 py-2 rounded hover:bg-slate-700">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Medical Record Modal -->
+  <div id="viewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Medical Record Details</h3>
+        <div class="flex gap-2">
+          <button id="printRecordBtn" class="bg-green-600 px-3 py-1 rounded text-sm hover:bg-green-700">
+            <i class="fas fa-print mr-1"></i>Print
+          </button>
+          <button id="closeViewBtn" class="bg-slate-600 px-3 py-1 rounded text-sm hover:bg-slate-700">
+            <i class="fas fa-times mr-1"></i>Close
+          </button>
+        </div>
+      </div>
+      <div id="recordDetails" class="bg-white text-black p-6 rounded print-content">
+        <!-- Record details will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      .print-content, .print-content * { visibility: visible; }
+      .print-content { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+
+  <script type="module">
+    import { supabase } from '../js/supabaseClient.js';
+
+    let currentUser = null;
+    let currentTeam = null;
+    let players = [];
+    let selectedPlayerId = null;
+
+    async function init() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = '/src/pages/login.html';
+          return;
+        }
+        currentUser = user;
+        
+        await loadUserTeam();
+        await loadPlayers();
+        document.getElementById('recordDate').value = new Date().toISOString().split('T')[0];
+      } catch (error) {
+        console.error('Init error:', error);
+      }
+    }
+
+    async function loadUserTeam() {
+      try {
+        const { data: userProfile } = await supabase
+          .from('users')
+          .select('team_id, role, first_name, last_name')
+          .eq('id', currentUser.id)
+          .single();
+        
+        if (userProfile) {
+          document.getElementById('userRole').textContent = (userProfile.role || 'user').toUpperCase();
+          
+          if (userProfile.team_id) {
+            const { data: team } = await supabase
+              .from('teams')
+              .select('*')
+              .eq('id', userProfile.team_id)
+              .single();
+            currentTeam = team;
+          }
+        }
+      } catch (error) {
+        console.error('Load user team error:', error);
+      }
+    }
+
+    async function loadPlayers() {
+      try {
+        if (!currentTeam) {
+          document.getElementById('playersList').innerHTML = '<div class="text-slate-400 p-4">No team assigned</div>';
+          return;
+        }
+
+        const { data } = await supabase
+          .from('players')
+          .select('*')
+          .eq('team_id', currentTeam.id)
+          .order('jersey_number');
+        
+        players = data || [];
+        
+        const container = document.getElementById('playersList');
+        const select = document.getElementById('playerSelect');
+        
+        if (players.length === 0) {
+          container.innerHTML = '<div class="text-slate-400 p-4">No players found</div>';
+          return;
+        }
+        
+        container.innerHTML = players.map(p => `
+          <div class="bg-slate-700 p-3 rounded cursor-pointer hover:bg-slate-600" onclick="selectPlayer('${p.id}')">
+            <div class="font-medium">${p.first_name} ${p.last_name}</div>
+            <div class="text-sm text-slate-400">#${p.jersey_number} - ${p.position}</div>
+          </div>
+        `).join('');
+        
+        select.innerHTML = '<option value="">Select Player...</option>' + 
+          players.map(p => `<option value="${p.id}">${p.first_name} ${p.last_name}</option>`).join('');
+      } catch (error) {
+        console.error('Load players error:', error);
+        document.getElementById('playersList').innerHTML = '<div class="text-red-400 p-4">Error loading players</div>';
+      }
+    }
+
+    async function selectPlayer(playerId) {
+      selectedPlayerId = playerId;
+      const player = players.find(p => p.id === playerId);
+      
+      // Highlight selected player
+      document.querySelectorAll('#playersList > div').forEach(div => {
+        div.classList.remove('bg-blue-600');
+        div.classList.add('bg-slate-700');
+      });
+      event.target.closest('div').classList.remove('bg-slate-700');
+      event.target.closest('div').classList.add('bg-blue-600');
+      
+      await loadRecords(playerId);
+    }
+
+    async function loadRecords(playerId) {
+      try {
+        console.log('Loading records for player:', playerId);
+        const { data, error } = await supabase
+          .from('medical_records')
+          .select('*')
+          .eq('player_id', playerId)
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('Database error:', error);
+          throw error;
+        }
+        
+        const container = document.getElementById('recordsList');
+        const records = data || [];
+        
+        console.log('Found records:', records.length);
+        
+        if (records.length === 0) {
+          container.innerHTML = '<div class="text-slate-400 p-4">No medical records found for this player</div>';
+          return;
+        }
+        
+        container.innerHTML = records.map(r => {
+          const statusColor = {
+            cleared: 'text-green-400',
+            recovering: 'text-yellow-400', 
+            chronic: 'text-red-400'
+          }[r.recovery_status] || 'text-slate-400';
+          
+          const clearanceIcon = r.clearance_to_play ? 
+            '<i class="fas fa-check-circle text-green-400 ml-2" title="Cleared to play"></i>' : 
+            '<i class="fas fa-times-circle text-red-400 ml-2" title="Not cleared to play"></i>';
+          
+          return `
+            <div class="bg-slate-700 p-3 rounded">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center">
+                    <span class="font-medium">${r.injury_type || 'Medical Record'}</span>
+                    ${clearanceIcon}
+                    ${r.severity ? `<span class="ml-2 px-2 py-1 text-xs rounded ${r.severity === 'severe' ? 'bg-red-900 text-red-300' : r.severity === 'moderate' ? 'bg-yellow-900 text-yellow-300' : 'bg-green-900 text-green-300'}">${r.severity}</span>` : ''}
+                  </div>
+                  <div class="text-sm text-slate-400">${new Date(r.injury_date).toLocaleDateString()}</div>
+                  <div class="text-sm mt-1">${r.description || ''}</div>
+                  <div class="flex items-center mt-2">
+                    <span class="text-xs ${statusColor}">${r.recovery_status}</span>
+                    ${r.restrictions ? `<span class="text-xs text-orange-400 ml-2">Restrictions</span>` : ''}
+                    ${r.follow_up_required ? `<span class="text-xs text-blue-400 ml-2">Follow-up Required</span>` : ''}
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="viewRecord('${r.id}')" class="text-blue-400 hover:text-blue-300">
+                    <i class="fas fa-eye text-sm"></i>
+                  </button>
+                  <button onclick="printRecord('${r.id}')" class="text-green-400 hover:text-green-300">
+                    <i class="fas fa-print text-sm"></i>
+                  </button>
+                  <button onclick="deleteRecord('${r.id}')" class="text-red-400 hover:text-red-300">
+                    <i class="fas fa-trash text-sm"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Load records error:', error);
+        const container = document.getElementById('recordsList');
+        container.innerHTML = `<div class="text-red-400 p-4">Error loading records: ${error.message}</div>`;
+      }
+    }
+
+    // Event listeners
+    document.getElementById('addRecordBtn').addEventListener('click', () => {
+      document.getElementById('addModal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+      document.getElementById('addModal').classList.add('hidden');
+    });
+
+    document.getElementById('closeViewBtn').addEventListener('click', () => {
+      document.getElementById('viewModal').classList.add('hidden');
+    });
+
+    document.getElementById('printRecordBtn').addEventListener('click', () => {
+      window.print();
+    });
+
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      try {
+        const recordData = {
+          player_id: document.getElementById('playerSelect').value,
+          recorded_by: currentUser.id,
+          injury_date: document.getElementById('recordDate').value,
+          injury_type: document.getElementById('recordType').value,
+          description: document.getElementById('recordDesc').value,
+          severity: document.getElementById('severity').value || null,
+          clearance_to_play: document.getElementById('clearanceToPlay').value === 'true',
+          recovery_status: document.getElementById('recoveryStatus').value,
+          restrictions: document.getElementById('restrictions').value || null,
+          expected_return_date: document.getElementById('expectedReturn').value || null,
+          follow_up_required: document.getElementById('followUpRequired').value === 'true'
+        };
+        
+        // Add vital signs if provided
+        const vitals = {};
+        if (document.getElementById('bloodPressure').value) vitals.blood_pressure = document.getElementById('bloodPressure').value;
+        if (document.getElementById('heartRate').value) vitals.heart_rate = parseInt(document.getElementById('heartRate').value);
+        if (document.getElementById('temperature').value) vitals.temperature = parseFloat(document.getElementById('temperature').value);
+        if (document.getElementById('weight').value) vitals.weight = parseFloat(document.getElementById('weight').value);
+        if (document.getElementById('treatment').value) vitals.treatment = document.getElementById('treatment').value;
+        
+        // Add vitals to description if any provided
+        if (Object.keys(vitals).length > 0) {
+          recordData.description += '\n\nVital Signs & Additional Info:\n' + 
+            Object.entries(vitals).map(([key, value]) => `${key.replace('_', ' ')}: ${value}`).join('\n');
+        }
+        
+        const { error } = await supabase.from('medical_records').insert(recordData);
+        
+        if (error) throw error;
+        
+        document.getElementById('addModal').classList.add('hidden');
+        document.getElementById('addForm').reset();
+        document.getElementById('recordDate').value = new Date().toISOString().split('T')[0];
+        
+        if (selectedPlayerId) {
+          await loadRecords(selectedPlayerId);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = '/src/pages/login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+
+    window.viewRecord = async (recordId) => {
+      try {
+        const { data: record } = await supabase
+          .from('medical_records')
+          .select('*, players(first_name, last_name, jersey_number)')
+          .eq('id', recordId)
+          .single();
+        
+        if (record) {
+          const player = record.players;
+          document.getElementById('recordDetails').innerHTML = `
+            <div class="medical-record-print">
+              <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-blue-600">MEDICAL RECORD</h2>
+                <p class="text-gray-600">Sports Hub Medical Department</p>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                  <h3 class="font-bold text-lg mb-3 text-blue-600">Patient Information</h3>
+                  <p><strong>Name:</strong> ${player.first_name} ${player.last_name}</p>
+                  <p><strong>Jersey #:</strong> ${player.jersey_number}</p>
+                  <p><strong>Record Date:</strong> ${new Date(record.injury_date).toLocaleDateString()}</p>
+                  <p><strong>Record Type:</strong> ${record.injury_type}</p>
+                </div>
+                <div>
+                  <h3 class="font-bold text-lg mb-3 text-blue-600">Medical Status</h3>
+                  <p><strong>Severity:</strong> ${record.severity || 'N/A'}</p>
+                  <p><strong>Recovery Status:</strong> ${record.recovery_status}</p>
+                  <p><strong>Cleared to Play:</strong> ${record.clearance_to_play ? 'YES' : 'NO'}</p>
+                  <p><strong>Follow-up Required:</strong> ${record.follow_up_required ? 'YES' : 'NO'}</p>
+                </div>
+              </div>
+              
+              ${record.blood_pressure || record.heart_rate || record.temperature || record.weight ? `
+              <div class="mb-6">
+                <h3 class="font-bold text-lg mb-3 text-blue-600">Vital Signs</h3>
+                <div class="grid grid-cols-4 gap-4">
+                  ${record.blood_pressure ? `<p><strong>Blood Pressure:</strong> ${record.blood_pressure}</p>` : ''}
+                  ${record.heart_rate ? `<p><strong>Heart Rate:</strong> ${record.heart_rate} bpm</p>` : ''}
+                  ${record.temperature ? `<p><strong>Temperature:</strong> ${record.temperature}°C</p>` : ''}
+                  ${record.weight ? `<p><strong>Weight:</strong> ${record.weight} kg</p>` : ''}
+                </div>
+              </div>
+              ` : ''}
+              
+              <div class="mb-6">
+                <h3 class="font-bold text-lg mb-3 text-blue-600">Medical Findings</h3>
+                <p class="whitespace-pre-wrap">${record.description}</p>
+              </div>
+              
+              ${record.treatment ? `
+              <div class="mb-6">
+                <h3 class="font-bold text-lg mb-3 text-blue-600">Treatment & Recommendations</h3>
+                <p class="whitespace-pre-wrap">${record.treatment}</p>
+              </div>
+              ` : ''}
+              
+              ${record.restrictions ? `
+              <div class="mb-6">
+                <h3 class="font-bold text-lg mb-3 text-blue-600">Restrictions & Limitations</h3>
+                <p class="whitespace-pre-wrap">${record.restrictions}</p>
+              </div>
+              ` : ''}
+              
+              ${record.expected_return_date ? `
+              <div class="mb-6">
+                <h3 class="font-bold text-lg mb-3 text-blue-600">Return Information</h3>
+                <p><strong>Expected Return Date:</strong> ${new Date(record.expected_return_date).toLocaleDateString()}</p>
+              </div>
+              ` : ''}
+              
+              <div class="mt-8 pt-4 border-t border-gray-300">
+                <p class="text-sm text-gray-600">Record created: ${new Date(record.created_at).toLocaleString()}</p>
+                <p class="text-sm text-gray-600">Medical Staff ID: ${record.recorded_by}</p>
+              </div>
+            </div>
+          `;
+          document.getElementById('viewModal').classList.remove('hidden');
+        }
+      } catch (error) {
+        alert('Error loading record: ' + error.message);
+      }
+    };
+    
+    window.printRecord = async (recordId) => {
+      await window.viewRecord(recordId);
+      setTimeout(() => window.print(), 500);
+    };
+    
+    window.deleteRecord = async (recordId) => {
+      if (!confirm('Delete this record?')) return;
+      
+      try {
+        const { error } = await supabase.from('medical_records').delete().eq('id', recordId);
+        if (error) throw error;
+        
+        if (selectedPlayerId) {
+          await loadRecords(selectedPlayerId);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    };
+
+    // Test function to add a sample record
+    window.testAddRecord = async (playerId) => {
+      try {
+        const { error } = await supabase.from('medical_records').insert({
+          player_id: playerId,
+          recorded_by: currentUser.id,
+          injury_date: new Date().toISOString().split('T')[0],
+          injury_type: 'Test Record',
+          description: 'Test medical record to verify functionality',
+          recovery_status: 'cleared',
+          clearance_to_play: true
+        });
+        
+        if (error) throw error;
+        
+        await loadRecords(playerId);
+        console.log('Test record added successfully');
+      } catch (error) {
+        console.error('Error adding test record:', error);
+        alert('Error: ' + error.message);
+      }
+    };
+
+    window.selectPlayer = selectPlayer;
+
+    init();
+  </script>
+</body>
+</html>

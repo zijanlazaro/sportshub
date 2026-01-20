@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Management - Sports Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100">
+  <div class="min-h-screen">
+    <!-- Header -->
+    <div class="bg-slate-800 border-b border-slate-700 p-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Team Management</h1>
+      <div class="flex gap-4">
+        <a href="/src/pages/dashboard.html" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+          <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+        </a>
+        <button onclick="showAddTeamModal()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
+          <i class="fas fa-plus mr-2"></i> Add Team
+        </button>
+      </div>
+    </div>
+
+    <!-- Teams Grid -->
+    <div class="p-6">
+      <div class="mb-4">
+        <p class="text-slate-400">Create and manage your sports teams. Click "Add Team" to get started.</p>
+      </div>
+      <div id="teamsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="text-center text-slate-400">Loading teams...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple team management without modules
+    let supabaseUrl = 'https://guyppjhpjfzrfxldltjz.supabase.co';
+    let supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4';
+
+    async function loadTeams() {
+      try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/teams?select=*`, {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        const teams = await response.json();
+        
+        const grid = document.getElementById('teamsGrid');
+        if (teams.length === 0) {
+          grid.innerHTML = '<div class="col-span-full text-center text-slate-400">No teams found. Create your first team!</div>';
+          return;
+        }
+
+        grid.innerHTML = teams.map(team => `
+          <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+            <h3 class="text-xl font-bold mb-2">${team.name}</h3>
+            <p class="text-slate-400 mb-2">Sport: ${team.sport}</p>
+            <p class="text-slate-400 mb-4">Season: ${team.season}</p>
+            <button onclick="deleteTeam('${team.id}')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
+              Delete
+            </button>
+          </div>
+        `).join('');
+      } catch (error) {
+        document.getElementById('teamsGrid').innerHTML = `<div class="text-red-400">Error: ${error.message}</div>`;
+      }
+    }
+
+    function showAddTeamModal() {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      modal.innerHTML = `
+        <div class="bg-slate-800 p-6 rounded-lg w-96">
+          <h3 class="text-xl font-bold mb-4">Add New Team</h3>
+          <form onsubmit="createTeam(event)">
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Team Name</label>
+              <input type="text" name="name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Sport</label>
+              <select name="sport" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+                <option value="Basketball">Basketball</option>
+                <option value="Football">Football</option>
+                <option value="Soccer">Soccer</option>
+                <option value="Baseball">Baseball</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Season</label>
+              <input type="text" name="season" value="2024" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+            </div>
+            <div class="flex gap-2">
+              <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 py-2 rounded text-white">Create Team</button>
+              <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    async function createTeam(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const teamData = {
+        name: formData.get('name'),
+        sport: formData.get('sport'),
+        season: formData.get('season'),
+        active: true
+      };
+      
+      try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/teams`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(teamData)
+        });
+        
+        if (response.ok) {
+          event.target.closest('.fixed').remove();
+          loadTeams();
+          alert('Team created successfully!');
+        } else {
+          alert('Failed to create team');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function deleteTeam(teamId) {
+      if (!confirm('Delete this team?')) return;
+      
+      try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/teams?id=eq.${teamId}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        
+        if (response.ok) {
+          loadTeams();
+          alert('Team deleted successfully!');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Load teams when page loads
+    loadTeams();
+  </script>
+</body>
+</html>

@@ -4,6 +4,7 @@
  */
 
 import {
+  supabase,
   signUp,
   signIn,
   signOut as supabaseSignOut,
@@ -19,27 +20,44 @@ class AuthManager {
   }
 
   /**
-   * Initialize auth state listener
+   * Initialize auth state listener with better error handling
    */
-  init() {
-    return onAuthStateChange(async (user) => {
-      this.currentUser = user;
-      if (user) {
+  async init() {
+    try {
+      // Get initial session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        this.currentUser = session.user;
         this.currentProfile = await getCurrentUserProfile();
-      } else {
-        this.currentProfile = null;
       }
-      this.notifyListeners();
-    });
+
+      // Set up auth state listener
+      return onAuthStateChange(async (user) => {
+        this.currentUser = user;
+        if (user) {
+          try {
+            this.currentProfile = await getCurrentUserProfile();
+          } catch (error) {
+            console.error('Failed to load profile:', error);
+            this.currentProfile = null;
+          }
+        } else {
+          this.currentProfile = null;
+        }
+        this.notifyListeners();
+      });
+    } catch (error) {
+      console.error('Auth initialization failed:', error);
+      throw error;
+    }
   }
 
   /**
    * Register new user
    */
-  async register(email, password, fullName, role = 'player', teamId = null) {
+  async register(email, password, role = 'player', teamId = null) {
     try {
       const result = await signUp(email, password, {
-        full_name: fullName,
         role,
         team_id: teamId
       });
@@ -87,10 +105,20 @@ class AuthManager {
   }
 
   /**
-   * Check if user has specific role
+   * Refresh current user profile
    */
-  hasRole(role) {
-    return this.currentProfile?.role === role;
+  async refreshProfile() {
+    if (this.currentUser) {
+      try {
+        this.currentProfile = await getCurrentUserProfile();
+        this.notifyListeners();
+        return this.currentProfile;
+      } catch (error) {
+        console.error('Failed to refresh profile:', error);
+        throw error;
+      }
+    }
+    return null;
   }
 
   /**
