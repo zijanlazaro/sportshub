@@ -13,25 +13,42 @@ import {
   onAuthStateChange
 } from './supabaseClient.js';
 
+// Role-based permission map
+const PERMISSIONS = {
+  // Who can manage players (add/edit/delete)
+  manage_players:     ['admin', 'team_manager', 'coach'],
+  // Who can view players
+  view_players:       ['admin', 'team_manager', 'coach', 'medical_staff', 'game_official', 'player'],
+  // Who can manage training & attendance
+  manage_training:    ['admin', 'team_manager', 'coach'],
+  view_training:      ['admin', 'team_manager', 'coach', 'player'],
+  // Who can manage medical records
+  manage_medical:     ['admin', 'team_manager', 'medical_staff'],
+  view_medical:       ['admin', 'team_manager', 'medical_staff', 'coach'],
+  // Who can create/update match results
+  manage_results:     ['game_official'],
+  view_results:       ['admin', 'team_manager', 'coach', 'game_official', 'player'],
+  // Who can manage teams
+  manage_teams:       ['admin', 'team_manager'],
+  // Who can manage schedules/events
+  manage_schedule:    ['admin', 'team_manager', 'coach'],
+  view_schedule:      ['admin', 'team_manager', 'coach', 'medical_staff', 'game_official', 'player'],
+};
+
 class AuthManager {
   constructor() {
     this.currentUser = null;
     this.currentProfile = null;
   }
 
-  /**
-   * Initialize auth state listener with better error handling
-   */
   async init() {
     try {
-      // Get initial session
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         this.currentUser = session.user;
         this.currentProfile = await getCurrentUserProfile();
       }
 
-      // Set up auth state listener
       return onAuthStateChange(async (user) => {
         this.currentUser = user;
         if (user) {
@@ -52,36 +69,22 @@ class AuthManager {
     }
   }
 
-  /**
-   * Register new user
-   */
   async register(email, password, role = 'player', teamId = null) {
     try {
-      const result = await signUp(email, password, {
-        role,
-        team_id: teamId
-      });
-      return result;
+      return await signUp(email, password, { role, team_id: teamId });
     } catch (error) {
       throw new Error(`Registration failed: ${error.message}`);
     }
   }
 
-  /**
-   * Login user
-   */
   async login(email, password) {
     try {
-      const result = await signIn(email, password);
-      return result;
+      return await signIn(email, password);
     } catch (error) {
       throw new Error(`Login failed: ${error.message}`);
     }
   }
 
-  /**
-   * Logout user
-   */
   async logout() {
     try {
       await supabaseSignOut();
@@ -90,23 +93,23 @@ class AuthManager {
     }
   }
 
-  /**
-   * Get current user
-   */
-  getUser() {
-    return this.currentUser;
-  }
+  getUser() { return this.currentUser; }
+  getProfile() { return this.currentProfile; }
+  getRole() { return this.currentProfile?.role || null; }
 
   /**
-   * Get current user profile
+   * Check if current user has permission for an action
    */
-  getProfile() {
-    return this.currentProfile;
+  can(action) {
+    const role = this.getRole();
+    if (!role) return false;
+    return (PERMISSIONS[action] || []).includes(role);
   }
 
-  /**
-   * Refresh current user profile
-   */
+  hasAnyRole(roles) {
+    return roles.includes(this.currentProfile?.role);
+  }
+
   async refreshProfile() {
     if (this.currentUser) {
       try {
@@ -121,30 +124,16 @@ class AuthManager {
     return null;
   }
 
-  /**
-   * Check if user is in specific role list
-   */
-  hasAnyRole(roles) {
-    return roles.includes(this.currentProfile?.role);
-  }
-
-  /**
-   * Subscribe to auth changes
-   */
   subscribe(callback) {
     this.listeners = this.listeners || [];
     this.listeners.push(callback);
-    return () => {
-      this.listeners = this.listeners.filter(l => l !== callback);
-    };
+    return () => { this.listeners = this.listeners.filter(l => l !== callback); };
   }
 
-  /**
-   * Notify all listeners of auth changes
-   */
   notifyListeners() {
     (this.listeners || []).forEach(cb => cb(this.currentUser, this.currentProfile));
   }
 }
 
 export const authManager = new AuthManager();
+export { PERMISSIONS };

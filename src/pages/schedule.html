@@ -3,211 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Schedule & Events - Sports Hub</title>
+  <title>Schedule - Sports Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/theme.css">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-slate-100">
-  <div class="flex h-screen">
-    <!-- Mobile Menu Button -->
-    <button id="mobileMenuBtn" class="lg:hidden fixed top-4 left-4 z-50 bg-slate-800 p-2 rounded-lg">
-      <i class="fas fa-bars text-white"></i>
-    </button>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform">
-      <div class="p-6 border-b border-slate-700">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="bg-blue-600 p-2 rounded-lg">
-            <i class="fas fa-basketball-ball text-white"></i>
-          </div>
-          <h1 class="text-xl font-bold">Sports Hub</h1>
+  <div class="min-h-screen p-6">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h1 class="text-3xl font-bold">Schedule & Events</h1>
+          <p class="text-slate-400">Manage team calendar and events</p>
         </div>
-        <p id="userRole" class="text-xs text-slate-400">Loading...</p>
-      </div>
-
-      <nav class="p-4 space-y-2">
-        <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-          <i class="fas fa-chart-line mr-2"></i> Overview
-        </a>
-        <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-          <i class="fas fa-users mr-2"></i> Players
-        </a>
-        <a href="./training.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-          <i class="fas fa-dumbbell mr-2"></i> Training
-        </a>
-        <a href="./medical.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-          <i class="fas fa-hospital mr-2"></i> Medical
-        </a>
-        <a href="#" class="block px-4 py-2 rounded-lg bg-blue-600 text-white">
-          <i class="fas fa-calendar mr-2"></i> Schedule
-        </a>
-        <a href="./teams.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-          <i class="fas fa-users-cog mr-2"></i> Manage Teams
-        </a>
-      </nav>
-
-      <div class="p-4 border-t border-slate-700 mt-auto">
-        <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
-          <i class="fas fa-sign-out-alt mr-2"></i> Logout
-        </button>
-      </div>
-    </aside>
-
-    <!-- Overlay for mobile -->
-    <div id="overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto lg:ml-0">
-      <header class="bg-slate-800 border-b border-slate-700 p-4 lg:p-6 pl-16 lg:pl-6">
-        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-          <h1 class="text-xl lg:text-2xl font-bold">Schedule & Events</h1>
-          <button id="addEventBtn" class="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700 text-sm lg:text-base">
-            <i class="fas fa-plus mr-2"></i>Add Event
+        <div class="flex gap-4">
+          <button id="addEventBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+            <i class="fas fa-plus mr-2"></i> Add Event
           </button>
+          <a href="./dashboard.html" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded-lg transition">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+          </a>
         </div>
-      </header>
-
-      <div class="p-4 lg:p-6">
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
-          <!-- Calendar -->
-          <div class="xl:col-span-2 bg-slate-800 rounded-lg p-4 lg:p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h2 class="text-lg lg:text-xl font-semibold">Calendar</h2>
-              <div class="flex items-center gap-2">
-                <button id="prevMonth" class="p-2 hover:bg-slate-700 rounded">
-                  <i class="fas fa-chevron-left"></i>
-                </button>
-                <span id="currentMonth" class="text-lg font-medium px-4"></span>
-                <button id="nextMonth" class="p-2 hover:bg-slate-700 rounded">
-                  <i class="fas fa-chevron-right"></i>
-                </button>
-              </div>
-            </div>
-            <div id="calendar" class="grid grid-cols-7 gap-1 text-sm">
-              <!-- Calendar will be generated here -->
-            </div>
-          </div>
-
-          <!-- Upcoming Events -->
-          <div class="bg-slate-800 rounded-lg p-4 lg:p-6">
-            <h2 class="text-lg lg:text-xl font-semibold mb-4">Upcoming Events</h2>
-            <div id="upcomingEvents" class="space-y-3">
-              <div class="text-center p-4 text-slate-400">Loading...</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Upcoming Events Only -->
       </div>
-    </main>
+
+      <!-- Calendar + Upcoming -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Calendar -->
+        <div class="lg:col-span-3 bg-slate-800 rounded-lg border border-slate-700 p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Calendar</h2>
+            <div class="flex gap-2 items-center">
+              <button id="prevMonth" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <span id="currentMonth" class="px-4 py-1 bg-slate-700 rounded font-medium min-w-[140px] text-center"></span>
+              <button id="nextMonth" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+          <div id="calendarGrid" class="grid grid-cols-7 gap-1"></div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="bg-slate-800 rounded-lg border border-slate-700 p-6">
+          <h3 class="text-lg font-semibold mb-4">Upcoming Events</h3>
+          <div id="upcomingEvents" class="space-y-3">
+            <p class="text-slate-400 text-sm">Loading…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Events -->
+      <div class="mt-6 bg-slate-800 rounded-lg border border-slate-700 p-6">
+        <h3 class="text-lg font-semibold mb-4">All Events</h3>
+        <div id="eventsList" class="space-y-3">
+          <p class="text-slate-400 text-sm">Loading…</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Add Event Modal -->
-  <div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-      <h3 class="text-lg font-semibold mb-4">Add New Event</h3>
-      <form id="addForm">
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Event Title</label>
-          <input type="text" id="eventTitle" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+  <div id="eventModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 w-full max-w-md mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Add New Event</h3>
+        <button id="closeModal" class="text-slate-400 hover:text-white text-xl">&times;</button>
+      </div>
+      <form id="eventForm" class="space-y-4">
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Title *</label>
+          <input type="text" id="eventTitle" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" placeholder="Event title">
         </div>
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Event Type</label>
-          <select id="eventType" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
-            <option value="">Select Type...</option>
-            <option value="game">Game/Match</option>
-            <option value="training">Training Session</option>
-            <option value="meeting">Team Meeting</option>
-            <option value="tournament">Tournament</option>
-            <option value="other">Other</option>
-          </select>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm text-slate-400 mb-1">Type *</label>
+            <select id="eventType" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white">
+              <option value="game">Game</option>
+              <option value="training">Training</option>
+              <option value="meeting">Meeting</option>
+              <option value="tournament">Tournament</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-1">Date *</label>
+            <input type="date" id="eventDate" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white">
+          </div>
         </div>
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Date</label>
-          <input type="date" id="eventDate" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm text-slate-400 mb-1">Time</label>
+            <input type="time" id="eventTime" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white">
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-1">Location</label>
+            <input type="text" id="eventLocation" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" placeholder="Venue">
+          </div>
         </div>
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Time</label>
-          <input type="time" id="eventTime" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Description</label>
+          <textarea id="eventDescription" rows="2" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" placeholder="Optional details"></textarea>
         </div>
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Location</label>
-          <input type="text" id="eventLocation" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="Event location">
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Opponent Team (for games)</label>
-          <input type="text" id="opponentTeam" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="vs Team Name">
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm mb-2">Description</label>
-          <textarea id="eventDescription" class="w-full bg-slate-700 border border-slate-600 rounded p-2" rows="3"></textarea>
-        </div>
-        <div class="flex gap-2">
-          <button type="submit" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Add Event</button>
-          <button type="button" id="cancelBtn" class="bg-slate-600 px-4 py-2 rounded hover:bg-slate-700">Cancel</button>
+        <div id="formError" class="text-red-400 text-sm hidden"></div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg transition font-medium">
+            Save Event
+          </button>
+          <button type="button" id="cancelModal" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded-lg transition">
+            Cancel
+          </button>
         </div>
       </form>
     </div>
   </div>
 
-  <script type="module">
-    // Use CDN version for consistency with deploy
-    const { createClient } = window.supabase;
-    const supabase = createClient('https://guyppjhpjfzrfxldltjz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4');
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://guyppjhpjfzrfxldltjz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let currentUser = null;
-    let currentTeam = null;
     let currentDate = new Date();
     let events = [];
 
-    const months = ['January', 'February', 'March', 'April', 'May', 'June',
-                   'July', 'August', 'September', 'October', 'November', 'December'];
+    const TYPE_COLORS = {
+      game:            'bg-blue-500',
+      training:        'bg-green-500',
+      meeting:         'bg-yellow-500',
+      tournament:      'bg-purple-500',
+      match:           'bg-orange-500',
+      medical_checkup: 'bg-red-500',
+      other:           'bg-slate-500',
+    };
 
-    async function init() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          window.location.href = './login.html';
-          return;
-        }
-        currentUser = user;
-        
-        await loadUserTeam();
-        await loadEvents();
-        renderCalendar();
-        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
-      } catch (error) {
-        console.error('Init error:', error);
-      }
-    }
-
-    async function loadUserTeam() {
-      try {
-        const { data: userProfile } = await supabase
-          .from('users')
-          .select('team_id, role, first_name, last_name')
-          .eq('id', currentUser.id)
-          .single();
-        
-        if (userProfile) {
-          document.getElementById('userRole').textContent = (userProfile.role || 'user').toUpperCase();
-          
-          if (userProfile.team_id) {
-            const { data: team } = await supabase
-              .from('teams')
-              .select('*')
-              .eq('id', userProfile.team_id)
-              .single();
-            currentTeam = team;
-          }
-        }
-      } catch (error) {
-        console.error('Load user team error:', error);
-      }
-    }
+    const TYPE_BADGES = {
+      game:            'bg-blue-900 text-blue-300',
+      training:        'bg-green-900 text-green-300',
+      meeting:         'bg-yellow-900 text-yellow-300',
+      tournament:      'bg-purple-900 text-purple-300',
+      match:           'bg-orange-900 text-orange-300',
+      medical_checkup: 'bg-red-900 text-red-300',
+      other:           'bg-slate-700 text-slate-300',
+    };
 
     async function loadEvents() {
       try {
@@ -215,136 +155,138 @@
           .from('events')
           .select('*')
           .order('event_date', { ascending: true });
-        
-        if (error) throw error;
-        
-        events = data || [];
-        renderUpcomingEvents();
-      } catch (error) {
-        console.error('Load events error:', error);
-        document.getElementById('upcomingEvents').innerHTML = '<div class="text-red-400 p-4">Error loading events</div>';
+        events = error ? [] : (data || []);
+      } catch (e) {
+        console.error('Failed to load events:', e);
+        events = [];
       }
+      renderCalendar();
+      renderUpcoming();
+      renderAllEvents();
     }
 
     function renderCalendar() {
-      const calendar = document.getElementById('calendar');
-      const monthYear = document.getElementById('currentMonth');
-      
-      monthYear.textContent = `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-      
+      const monthNames = ['January','February','March','April','May','June',
+        'July','August','September','October','November','December'];
+
+      document.getElementById('currentMonth').textContent =
+        `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
       const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
       const startDate = new Date(firstDay);
       startDate.setDate(startDate.getDate() - firstDay.getDay());
-      
-      let calendarHTML = '';
-      
-      // Header
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      dayNames.forEach(day => {
-        calendarHTML += `<div class="p-2 text-center font-semibold text-slate-400">${day}</div>`;
+
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+
+      // Day headers
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'p-2 text-center text-slate-400 font-medium text-xs';
+        el.textContent = d;
+        grid.appendChild(el);
       });
-      
-      console.log('Total events:', events.length);
-      
-      // Calendar days
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
       for (let i = 0; i < 42; i++) {
         const date = new Date(startDate);
         date.setDate(startDate.getDate() + i);
-        
-        const isCurrentMonth = date.getMonth() === currentDate.getMonth();
-        const isToday = date.toDateString() === new Date().toDateString();
+
         const dateStr = date.toISOString().split('T')[0];
-        const dayEvents = events.filter(e => (e.event_date || e.date) === dateStr);
-        
+        const dayEvents = events.filter(e => e.event_date === dateStr);
+        const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+        const isToday = date.getTime() === today.getTime();
+
+        const el = document.createElement('div');
+        el.className = `p-1 text-center rounded transition min-h-[52px] flex flex-col items-center ${
+          isCurrentMonth ? 'text-white hover:bg-slate-700 cursor-pointer' : 'text-slate-600'
+        } ${isToday ? 'ring-2 ring-blue-500 bg-slate-700' : ''}`;
+
+        let dotsHtml = '';
         if (dayEvents.length > 0) {
-          console.log(`Date ${dateStr} has ${dayEvents.length} events:`, dayEvents);
+          const dots = dayEvents.slice(0, 3).map(e =>
+            `<span class="inline-block w-1.5 h-1.5 rounded-full ${TYPE_COLORS[e.event_type] || 'bg-slate-400'}"></span>`
+          ).join('');
+          dotsHtml = `<div class="flex gap-0.5 justify-center mt-0.5">${dots}</div>`;
         }
-        
-        const hasEvents = dayEvents.length > 0;
-        const bgClass = hasEvents ? 'bg-red-800 border-red-500' : (isCurrentMonth ? 'bg-slate-700' : 'bg-slate-800');
-        const textClass = hasEvents ? 'text-red-200 font-bold' : (isCurrentMonth ? 'text-slate-100' : 'text-slate-500');
-        
-        calendarHTML += `
-          <div class="p-2 min-h-[60px] border border-slate-700 ${bgClass} ${isToday ? 'ring-2 ring-blue-500' : ''} hover:bg-slate-600 cursor-pointer" onclick="selectDate('${dateStr}')">
-            <div class="text-sm ${textClass}">${date.getDate()}</div>
-            ${dayEvents.map(e => {
-              const title = e.event_title || e.title || 'Event';
-              return `<div class="text-xs bg-blue-600 rounded px-1 mt-1 truncate" title="${title}">${title}</div>`;
-            }).join('')}
-          </div>
-        `;
+
+        el.innerHTML = `<div class="text-sm font-medium">${date.getDate()}</div>${dotsHtml}`;
+
+        if (isCurrentMonth && dayEvents.length > 0) {
+          el.title = dayEvents.map(e => e.event_title).join(', ');
+        }
+
+        grid.appendChild(el);
       }
-      
-      calendar.innerHTML = calendarHTML;
     }
 
-    function renderUpcomingEvents() {
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatTime(timeStr) {
+      if (!timeStr) return '';
+      const [h, m] = timeStr.split(':');
+      const hour = parseInt(h);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      return `${hour % 12 || 12}:${m} ${ampm}`;
+    }
+
+    function renderUpcoming() {
       const container = document.getElementById('upcomingEvents');
-      // Use actual today's date
       const today = new Date().toISOString().split('T')[0];
-      
-      console.log('Today (fixed):', today);
-      console.log('All events raw:', events);
-      
-      // Try both field name variations
-      const upcoming = events.filter(e => {
-        const eventDate = e.event_date || e.date;
-        console.log('Event date:', eventDate, 'vs Today:', today, 'Compare:', eventDate >= today);
-        return eventDate >= today;
-      }).slice(0, 5);
-      
-      console.log('Filtered upcoming events:', upcoming);
-      
+      const upcoming = events
+        .filter(e => e.event_date >= today)
+        .slice(0, 5);
+
       if (upcoming.length === 0) {
-        container.innerHTML = '<div class="text-slate-400 p-4">No upcoming events</div>';
+        container.innerHTML = '<p class="text-slate-400 text-sm">No upcoming events</p>';
         return;
       }
-      
-      container.innerHTML = upcoming.map(event => {
-        const eventDate = new Date(event.event_date || event.date);
-        const eventTitle = event.event_title || event.title || 'Event';
-        const eventType = event.event_type || event.type || 'other';
-        const eventTime = event.event_time || event.time || '';
-        const eventLocation = event.location || event.venue || '';
-        
-        const typeColors = {
-          game: 'bg-red-900 text-red-300',
-          training: 'bg-blue-900 text-blue-300',
-          meeting: 'bg-yellow-900 text-yellow-300',
-          tournament: 'bg-purple-900 text-purple-300',
-          other: 'bg-gray-900 text-gray-300'
-        };
-        
-        return `
-          <div class="bg-slate-700 p-3 rounded">
-            <div class="flex justify-between items-start">
-              <div class="flex-1">
-                <div class="font-medium">${eventTitle}</div>
-                <div class="text-sm text-slate-400">${eventDate.toLocaleDateString()} ${eventTime}</div>
-                <div class="text-sm text-slate-400">${eventLocation}</div>
-                <span class="inline-block px-2 py-1 text-xs rounded mt-1 ${typeColors[eventType] || typeColors.other}">${eventType}</span>
-              </div>
-              <button onclick="deleteEvent('${event.id}')" class="text-red-400 hover:text-red-300 ml-2">
-                <i class="fas fa-trash text-sm"></i>
-              </button>
+
+      container.innerHTML = upcoming.map(e => `
+        <div class="bg-slate-700 rounded-lg p-3">
+          <div class="flex items-start gap-2">
+            <span class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${TYPE_COLORS[e.event_type] || 'bg-slate-400'}"></span>
+            <div class="min-w-0">
+              <p class="font-medium text-sm truncate">${e.event_title}</p>
+              <p class="text-slate-400 text-xs">${formatDate(e.event_date)}${e.event_time ? ' · ' + formatTime(e.event_time) : ''}</p>
+              ${e.location ? `<p class="text-slate-500 text-xs truncate">${e.location}</p>` : ''}
             </div>
           </div>
-        `;
-      }).join('');
+        </div>
+      `).join('');
     }
 
+    function renderAllEvents() {
+      const container = document.getElementById('eventsList');
 
+      if (events.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-sm">No events found</p>';
+        return;
+      }
 
-    // Event listeners
-    document.getElementById('addEventBtn').addEventListener('click', () => {
-      document.getElementById('addModal').classList.remove('hidden');
-    });
+      container.innerHTML = events.map(e => `
+        <div class="bg-slate-700 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold">${e.event_title}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ${TYPE_BADGES[e.event_type] || 'bg-slate-600 text-slate-300'} capitalize">${e.event_type.replace('_', ' ')}</span>
+            </div>
+            <div class="text-slate-400 text-sm mt-1 flex flex-wrap gap-x-4 gap-y-1">
+              <span><i class="fas fa-calendar mr-1"></i>${formatDate(e.event_date)}${e.event_time ? ' at ' + formatTime(e.event_time) : ''}</span>
+              ${e.location ? `<span><i class="fas fa-map-marker-alt mr-1"></i>${e.location}</span>` : ''}
+            </div>
+            ${e.event_description ? `<p class="text-slate-500 text-sm mt-1 line-clamp-2">${e.event_description}</p>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
 
-    document.getElementById('cancelBtn').addEventListener('click', () => {
-      document.getElementById('addModal').classList.add('hidden');
-    });
-
+    // Calendar navigation
     document.getElementById('prevMonth').addEventListener('click', () => {
       currentDate.setMonth(currentDate.getMonth() - 1);
       renderCalendar();
@@ -355,87 +297,60 @@
       renderCalendar();
     });
 
-    document.getElementById('addForm').addEventListener('submit', async (e) => {
+    // Modal
+    const modal = document.getElementById('eventModal');
+    const openModal = () => {
+      document.getElementById('eventForm').reset();
+      document.getElementById('formError').classList.add('hidden');
+      // Default date to today
+      document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+      modal.classList.remove('hidden');
+    };
+    const closeModal = () => modal.classList.add('hidden');
+
+    document.getElementById('addEventBtn').addEventListener('click', openModal);
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      try {
-        const eventData = {
-          event_title: document.getElementById('eventTitle').value,
-          event_type: document.getElementById('eventType').value,
-          event_date: document.getElementById('eventDate').value,
-          event_time: document.getElementById('eventTime').value || null,
-          location: document.getElementById('eventLocation').value || null,
-          event_description: document.getElementById('eventDescription').value || null,
-          status: 'scheduled',
-          team_id: currentTeam?.id || null,
-          created_by: currentUser.id
-        };
-        
-        // Add opponent team to description if provided
-        const opponentTeam = document.getElementById('opponentTeam').value;
-        if (opponentTeam) {
-          eventData.event_description = (eventData.event_description || '') + `\nOpponent: ${opponentTeam}`;
-        }
-        
-        const { error } = await supabase.from('events').insert(eventData);
-        
-        if (error) throw error;
-        
-        document.getElementById('addModal').classList.add('hidden');
-        document.getElementById('addForm').reset();
-        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
-        
-        await loadEvents();
-        renderCalendar();
-      } catch (error) {
-        alert('Error: ' + error.message);
+      const errEl = document.getElementById('formError');
+      errEl.classList.add('hidden');
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const payload = {
+        event_title:       document.getElementById('eventTitle').value.trim(),
+        event_type:        document.getElementById('eventType').value,
+        event_date:        document.getElementById('eventDate').value,
+        event_time:        document.getElementById('eventTime').value || null,
+        location:          document.getElementById('eventLocation').value.trim() || null,
+        event_description: document.getElementById('eventDescription').value.trim() || null,
+        created_by:        user?.id || null,
+        status:            'upcoming',
+      };
+
+      const { error } = await supabase.from('events').insert(payload);
+
+      if (error) {
+        errEl.textContent = 'Failed to save event: ' + error.message;
+        errEl.classList.remove('hidden');
+        return;
       }
+
+      closeModal();
+      await loadEvents();
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      try {
-        await supabase.auth.signOut();
-        window.location.href = './login.html';
-      } catch (error) {
-        console.error('Logout error:', error);
-      }
-    });
+    // Init — fallback to "no events" if Supabase never responds
+    const fallback = setTimeout(() => {
+      document.getElementById('upcomingEvents').innerHTML = '<p class="text-slate-400 text-sm">No upcoming events</p>';
+      document.getElementById('eventsList').innerHTML = '<p class="text-slate-400 text-sm">No events found</p>';
+      renderCalendar();
+    }, 5000);
 
-    // Mobile menu functionality
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    mobileMenuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-
-    window.selectDate = (dateStr) => {
-      document.getElementById('eventDate').value = dateStr;
-      document.getElementById('addModal').classList.remove('hidden');
-    };
-
-    window.deleteEvent = async (eventId) => {
-      if (!confirm('Delete this event?')) return;
-      
-      try {
-        const { error } = await supabase.from('events').delete().eq('id', eventId);
-        if (error) throw error;
-        
-        await loadEvents();
-        renderCalendar();
-      } catch (error) {
-        alert('Error: ' + error.message);
-      }
-    };
-
-    init();
+    loadEvents().then(() => clearTimeout(fallback));
   </script>
 </body>
 </html>

@@ -20,6 +20,8 @@ export async function getTeamPlayers(teamId) {
       jersey_number,
       height_cm,
       weight_kg,
+      status,
+      attendance_streak,
       user_id,
       created_at,
       player_stats(
@@ -62,6 +64,106 @@ export async function getPlayerProfile(playerId) {
 }
 
 /**
+ * Upload player photo to Supabase Storage, returns public URL
+ */
+export async function uploadPlayerPhoto(file, playerId) {
+  const ext = file.name.split('.').pop();
+  const path = `players/${playerId}.${ext}`;
+  const { error } = await supabase.storage.from('player-photos').upload(path, file, { upsert: true });
+  if (error) throw error;
+  const { data } = supabase.storage.from('player-photos').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+/**
+ * Get player full progress report: attendance streak, performance score, recommendation
+ */
+export async function getPlayerProgressReport(playerId) {
+  const [{ data: player }, { data: stats }, { data: attendance }] = await Promise.all([
+    supabase.from('players').select('*').eq('id', playerId).single(),
+    supabase.from('player_stats').select('*').eq('player_id', playerId).single(),
+    supabase.from('training_attendance')
+      .select('attendance_status, training_sessions(session_date)')
+      .eq('player_id', playerId)
+      .order('training_sessions(session_date)', { ascending: false })
+      .limit(30)
+  ]);
+
+  const records = attendance || [];
+  const totalSessions = records.length;
+  const presentCount = records.filter(r => r.attendance_status === 'present').length;
+  const attendanceRate = totalSessions > 0 ? (presentCount / totalSessions) * 100 : 0;
+
+  // Consecutive streak
+  let streak = 0;
+  for (const r of records) {
+    if (r.attendance_status === 'present') streak++;
+    else break;
+  }
+
+  // Performance score (0-100)
+  const gamesPlayed = stats?.games_played || 0;
+  const goals = stats?.goals_scored || stats?.points_scored || 0;
+  const assists = stats?.assists || 0;
+  const rating = stats?.avg_performance_rating || stats?.rating || 0;
+
+  const performanceScore = Math.min(100, Math.round(
+    (attendanceRate * 0.4) +
+    (Math.min(rating, 10) * 4) +
+    (Math.min(goals / Math.max(gamesPlayed, 1), 1) * 10) +
+    (Math.min(assists / Math.max(gamesPlayed, 1), 1) * 6)
+  ));
+
+  // Recommendation
+  let recommendation;
+  if (performanceScore >= 75 && attendanceRate >= 80) recommendation = 'Starter';
+  else if (performanceScore >= 55 && attendanceRate >= 60) recommendation = 'Bench';
+  else if (attendanceRate >= 40) recommendation = 'Monitor';
+  else recommendation = 'Needs Improvement';
+
+  return {
+    player,
+    stats,
+    attendanceRate: Math.round(attendanceRate),
+    streak,
+    totalSessions,
+    presentCount,
+    performanceScore,
+    recommendation
+  };
+}
+
+/**
+ * Check consecutive attendance and auto-promote Tryout -> Official Player
+ */
+export async function checkAndPromotePlayer(playerId) {
+  const { data: records } = await supabase
+    .from('training_attendance')
+    .select('attendance_status, training_sessions(session_date)')
+    .eq('player_id', playerId)
+    .order('training_sessions(session_date)', { ascending: false })
+    .limit(3);
+
+  if (!records || records.length < 3) return null;
+
+  const allPresent = records.every(r => r.attendance_status === 'present');
+  if (!allPresent) return null;
+
+  const { data: player } = await supabase.from('players').select('status').eq('id', playerId).single();
+  if (player?.status !== 'Tryout') return null;
+
+  const { data, error } = await supabase
+    .from('players')
+    .update({ status: 'Official Player', attendance_streak: 3 })
+    .eq('id', playerId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
  * Create new player
  */
 export async function createPlayer(teamId, playerData) {
@@ -71,12 +173,30 @@ export async function createPlayer(teamId, playerData) {
       team_id: teamId,
       first_name: playerData.first_name,
       last_name: playerData.last_name,
-      age: playerData.age,
+      age: playerData.age || null,
       position: playerData.position,
       jersey_number: playerData.jersey_number,
       height_cm: playerData.height_cm || null,
       weight_kg: playerData.weight_kg || null,
-      user_id: playerData.user_id || null
+      date_of_birth: playerData.date_of_birth || null,
+      place_of_birth: playerData.place_of_birth || null,
+      years_active: playerData.years_active || null,
+      recent_tournament: playerData.recent_tournament || null,
+      medical_conditions: playerData.medical_conditions || null,
+      medication: playerData.medication || null,
+      history_of_seizure: playerData.history_of_seizure || null,
+      recent_injury: playerData.recent_injury || null,
+      surgery_history: playerData.surgery_history || null,
+      pain_during_activity: playerData.pain_during_activity || null,
+      fit_for_high_intensity: playerData.fit_for_high_intensity || null,
+      blood_type: playerData.blood_type || null,
+      emergency_contact_name: playerData.emergency_contact_name || null,
+      emergency_contact_number: playerData.emergency_contact_number || null,
+      emergency_contact_relationship: playerData.emergency_contact_relationship || null,
+      user_id: playerData.user_id || null,
+      status: 'Tryout',
+      attendance_streak: 0
+      // photo_url is set separately after upload
     })
     .select()
     .single();

@@ -35,13 +35,13 @@
         <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
           <i class="fas fa-users mr-2"></i> Players
         </a>
-        <a href="./training.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+        <a id="navTraining" href="./training.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
           <i class="fas fa-dumbbell mr-2"></i> Training
         </a>
         <a href="#" class="block px-4 py-2 rounded-lg bg-blue-600 text-white">
           <i class="fas fa-hospital mr-2"></i> Medical
         </a>
-        <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+        <a href="./schedule.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
           <i class="fas fa-calendar mr-2"></i> Schedule
         </a>
         <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
@@ -257,8 +257,21 @@
           .single();
         
         if (userProfile) {
-          document.getElementById('userRole').textContent = (userProfile.role || 'user').toUpperCase();
-          
+          const role = userProfile.role || 'user';
+          document.getElementById('userRole').textContent = role.replace('_',' ').toUpperCase();
+
+          // Hide Training nav for medical_staff
+          if (role === 'medical_staff') {
+            document.getElementById('navTraining')?.classList.add('hidden');
+          }
+
+          // Medical staff must have a team assigned
+          if (role === 'medical_staff' && !userProfile.team_id) {
+            document.getElementById('playersList').innerHTML =
+              '<div class="text-yellow-400 p-4"><i class="fas fa-exclamation-triangle mr-2"></i>No team assigned. Contact your admin.</div>';
+            return;
+          }
+
           if (userProfile.team_id) {
             const { data: team } = await supabase
               .from('teams')
