@@ -111,14 +111,68 @@ export async function getTeamPerformanceDashboard(teamId) {
  * Get medical analytics for a team
  */
 export async function getMedicalAnalytics(teamId) {
-  const { data, error } = await supabase
-    .from('medical_analytics')
-    .select('*')
-    .eq('team_id', teamId)
-    .single();
+  const { data: players } = await supabase
+    .from('players')
+    .select('id')
+    .eq('team_id', teamId);
 
-  if (error) throw error;
-  return data;
+  if (!players || players.length === 0) {
+    return {
+      total_records: 0,
+      currently_injured: 0,
+      recent_injuries: 0,
+      avg_fitness_score: 0,
+      high_risk_players: 0,
+      pending_followups: 0
+    };
+  }
+
+  const playerIds = players.map(p => p.id);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const [medicalRecords, assessments] = await Promise.all([
+    supabase
+      .from('medical_records')
+      .select('*')
+      .in('player_id', playerIds),
+    supabase
+      .from('medical_assessments')
+      .select('overall_fitness, injury_risk_level')
+      .in('player_id', playerIds)
+      .order('assessment_date', { ascending: false })
+  ]);
+
+  const records = medicalRecords.data || [];
+  const assess = assessments.data || [];
+
+  const recentRecords = records.filter(r => new Date(r.created_at) >= thirtyDaysAgo);
+  const currentlyInjured = records.filter(r => r.recovery_status === 'recovering').length;
+  const pendingFollowups = records.filter(r => r.follow_up_required && (!r.follow_up_date || new Date(r.follow_up_date) >= new Date())).length;
+
+  const latestAssessments = [];
+  const seenPlayers = new Set();
+  assess.forEach(a => {
+    if (!seenPlayers.has(a.player_id)) {
+      latestAssessments.push(a);
+      seenPlayers.add(a.player_id);
+    }
+  });
+
+  const avgFitness = latestAssessments.length > 0
+    ? latestAssessments.reduce((sum, a) => sum + (a.overall_fitness || 0), 0) / latestAssessments.length
+    : 0;
+
+  const highRisk = latestAssessments.filter(a => a.injury_risk_level === 'high').length;
+
+  return {
+    total_records: records.length,
+    currently_injured: currentlyInjured,
+    recent_injuries: recentRecords.length,
+    avg_fitness_score: avgFitness,
+    high_risk_players: highRisk,
+    pending_followups: pendingFollowups
+  };
 }
 
 /**
@@ -137,6 +191,93 @@ export async function getPlayerPerformanceTrends(playerId, days = 30) {
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * Get team performance trends
+ */
+export async function getTeamPerformanceTrends(teamId, days = 30) {
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  const { data: players } = await supabase
+    .from('players')
+    .select('id')
+    .eq('team_id', teamId);
+
+  if (!players || players.length === 0) {
+    return {
+      avg_fitness_trend: 'stable',
+      attendance_trend: 'stable',
+      injury_trend: 'stable',
+      fitness_change: 0,
+      attendance_change: 0
+    };
+  }
+
+  const playerIds = players.map(p => p.id);
+
+  const { data: analytics } = await supabase
+    .from('player_analytics')
+    .select('date, fitness_score, training_attendance_rate, availability_status')
+    .in('player_id', playerIds)
+    .gte('date', startDate.toISOString().split('T')[0])
+    .order('date', { ascending: true });
+
+  if (!analytics || analytics.length === 0) {
+    return {
+      avg_fitness_trend: 'stable',
+      attendance_trend: 'stable',
+      injury_trend: 'stable',
+      fitness_change: 0,
+      attendance_change: 0
+    };
+  }
+
+  const groupedByDate = {};
+  analytics.forEach(a => {
+    if (!groupedByDate[a.date]) {
+      groupedByDate[a.date] = { fitness: [], attendance: [], injured: 0 };
+    }
+    if (a.fitness_score) groupedByDate[a.date].fitness.push(a.fitness_score);
+    if (a.training_attendance_rate) groupedByDate[a.date].attendance.push(a.training_attendance_rate);
+    if (a.availability_status === 'injured') groupedByDate[a.date].injured++;
+  });
+
+  const dates = Object.keys(groupedByDate).sort();
+  if (dates.length < 2) {
+    return {
+      avg_fitness_trend: 'stable',
+      attendance_trend: 'stable',
+      injury_trend: 'stable',
+      fitness_change: 0,
+      attendance_change: 0
+    };
+  }
+
+  const firstHalf = dates.slice(0, Math.floor(dates.length / 2));
+  const secondHalf = dates.slice(Math.floor(dates.length / 2));
+
+  const calcAvg = (dates, key) => {
+    const values = dates.flatMap(d => groupedByDate[d][key]);
+    return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+  };
+
+  const firstFitness = calcAvg(firstHalf, 'fitness');
+  const secondFitness = calcAvg(secondHalf, 'fitness');
+  const firstAttendance = calcAvg(firstHalf, 'attendance');
+  const secondAttendance = calcAvg(secondHalf, 'attendance');
+
+  const fitnessChange = secondFitness - firstFitness;
+  const attendanceChange = secondAttendance - firstAttendance;
+
+  return {
+    avg_fitness_trend: fitnessChange > 0.5 ? 'improving' : fitnessChange < -0.5 ? 'declining' : 'stable',
+    attendance_trend: attendanceChange > 5 ? 'improving' : attendanceChange < -5 ? 'declining' : 'stable',
+    injury_trend: 'stable',
+    fitness_change: fitnessChange,
+    attendance_change: attendanceChange
+  };
 }
 
 /**
@@ -241,29 +382,41 @@ export async function getTrainingAttendanceAnalytics(teamId, days = 30) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
-  const { data, error } = await supabase
-    .from('training_attendance_summary')
-    .select('*')
-    .eq('team_name', async () => {
-      const { data: team } = await supabase
-        .from('teams')
-        .select('name')
-        .eq('id', teamId)
-        .single();
-      return team?.name;
-    })
+  const { data: sessions, error } = await supabase
+    .from('training_sessions')
+    .select(`
+      id,
+      session_date,
+      training_attendance(attendance_status)
+    `)
+    .eq('team_id', teamId)
     .gte('session_date', startDate.toISOString().split('T')[0])
     .order('session_date', { ascending: false });
 
   if (error) throw error;
 
   const analytics = {
-    total_sessions: data.length,
-    avg_attendance_rate: data.length > 0 ? 
-      data.reduce((sum, s) => sum + (s.attendance_rate || 0), 0) / data.length : 0,
-    total_attendees: data.reduce((sum, s) => sum + (s.total_attendees || 0), 0),
-    sessions: data
+    total_sessions: sessions?.length || 0,
+    avg_attendance_rate: 0,
+    total_present: 0,
+    total_absent: 0,
+    sessions: sessions || []
   };
+
+  if (sessions && sessions.length > 0) {
+    let totalPresent = 0;
+    let totalRecords = 0;
+
+    sessions.forEach(session => {
+      const attendance = session.training_attendance || [];
+      totalRecords += attendance.length;
+      totalPresent += attendance.filter(a => a.attendance_status === 'present').length;
+    });
+
+    analytics.total_present = totalPresent;
+    analytics.total_absent = totalRecords - totalPresent;
+    analytics.avg_attendance_rate = totalRecords > 0 ? (totalPresent / totalRecords) * 100 : 0;
+  }
 
   return analytics;
 }

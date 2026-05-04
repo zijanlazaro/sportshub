@@ -3,10 +3,10 @@
  * Central hub for all database and auth operations - NO EMAIL CONFIRMATION
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://guyppjhpjfzrfxldltjz.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4';
+const SUPABASE_URL = 'https://guyppjhpjfzrfxldltjz.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4';
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables. Check .env file.');

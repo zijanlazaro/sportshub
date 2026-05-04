@@ -4,7 +4,6 @@
  */
 
 import { supabase } from './supabaseClient.js';
-import { debouncedRefreshTeamData } from './teamRefresh.js';
 
 /**
  * Get user profile by user ID with session validation
@@ -72,28 +71,14 @@ export async function updateUserProfile(userId, profileData) {
 
   if (error) throw error;
 
-  // If user is a coach, handle team coach assignments properly
-  if (profileData.role === 'coach') {
-    // First, clear coach_id from any previous team this user was coaching
-    const { error: clearError } = await supabase
+  // If user is a coach and assigned to a team, update team's coach_id
+  if (profileData.role === 'coach' && profileData.team_id) {
+    const { error: teamError } = await supabase
       .from('teams')
-      .update({ coach_id: null })
-      .eq('coach_id', userId);
+      .update({ coach_id: userId })
+      .eq('id', profileData.team_id);
     
-    if (clearError) console.warn('Failed to clear previous team coach:', clearError);
-    
-    // Then, if assigned to a new team, set this user as the coach
-    if (profileData.team_id) {
-      const { error: teamError } = await supabase
-        .from('teams')
-        .update({ coach_id: userId })
-        .eq('id', profileData.team_id);
-      
-      if (teamError) console.warn('Failed to update team coach:', teamError);
-    }
-    
-    // Refresh team data across all pages
-    debouncedRefreshTeamData();
+    if (teamError) console.warn('Failed to update team coach:', teamError);
   }
 
   return data;
@@ -162,27 +147,4 @@ export async function deleteTeam(teamId) {
     .eq('id', teamId);
 
   if (error) throw error;
-}
-
-/**
- * Clear coach assignment from team (used when coach changes teams)
- */
-export async function clearTeamCoach(teamId) {
-  const { error } = await supabase
-    .from('teams')
-    .update({ coach_id: null })
-    .eq('id', teamId);
-
-  if (error) throw error;
-}
-
-/**
- * Refresh teams data - utility function for UI updates
- */
-export async function refreshTeamsData() {
-  // This function can be called to trigger UI refresh
-  // Implementation depends on how the UI handles data updates
-  if (typeof window !== 'undefined' && window.loadTeams) {
-    window.loadTeams();
-  }
 }

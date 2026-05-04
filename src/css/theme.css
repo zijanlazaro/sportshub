@@ -1,0 +1,131 @@
+/* Sports Hub - Consistent Dark Theme */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border-primary: #475569;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+}
+
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Fix white backgrounds */
+.bg-white {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.bg-slate-800 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.bg-slate-700 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Fix black text */
+.text-black {
+  color: var(--text-primary) !important;
+}
+
+.text-white {
+  color: var(--text-primary) !important;
+}
+
+/* Form elements */
+input, select, textarea {
+  background-color: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Buttons */
+.bg-blue-600:hover {
+  background-color: #2563eb !important;
+}
+
+.bg-green-600:hover {
+  background-color: #059669 !important;
+}
+
+.bg-red-600:hover {
+  background-color: #dc2626 !important;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 768px) {
+  .mobile-card {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+  }
+  
+  /* Ensure mobile text is readable */
+  .text-xl, .text-2xl {
+    color: var(--text-primary) !important;
+  }
+  
+  /* Mobile sidebar */
+  #sidebar {
+    background-color: var(--bg-secondary) !important;
+  }
+  
+  /* Mobile menu button */
+  #mobileMenuBtn {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+/* Calendar specific */
+.calendar-day {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Table fixes */
+th {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+td {
+  color: var(--text-secondary) !important;
+}
+
+/* Modal fixes */
+.fixed.inset-0 {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Status badges */
+.bg-green-900 {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+}
+
+.bg-red-900 {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
+}
+
+.bg-yellow-900 {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #fcd34d !important;
+}
+
+.bg-blue-900 {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  color: #93c5fd !important;
+}

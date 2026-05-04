@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule & Events - Sports Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/theme.css">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-900 text-slate-100">
+  <div class="flex h-screen">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuBtn" class="lg:hidden fixed top-4 left-4 z-50 bg-slate-800 p-2 rounded-lg">
+      <i class="fas fa-bars text-white"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform">
+      <div class="p-6 border-b border-slate-700">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-blue-600 p-2 rounded-lg">
+            <i class="fas fa-basketball-ball text-white"></i>
+          </div>
+          <h1 class="text-xl font-bold">Sports Hub</h1>
+        </div>
+        <p id="userRole" class="text-xs text-slate-400">Loading...</p>
+      </div>
+
+      <nav class="p-4 space-y-2">
+        <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-chart-line mr-2"></i> Overview
+        </a>
+        <a href="./dashboard.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-users mr-2"></i> Players
+        </a>
+        <a href="./training.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-dumbbell mr-2"></i> Training
+        </a>
+        <a href="./medical.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-hospital mr-2"></i> Medical
+        </a>
+        <a href="#" class="block px-4 py-2 rounded-lg bg-blue-600 text-white">
+          <i class="fas fa-calendar mr-2"></i> Schedule
+        </a>
+        <a href="./teams.html" class="block px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          <i class="fas fa-users-cog mr-2"></i> Manage Teams
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700 mt-auto">
+        <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto lg:ml-0">
+      <header class="bg-slate-800 border-b border-slate-700 p-4 lg:p-6 pl-16 lg:pl-6">
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+          <h1 class="text-xl lg:text-2xl font-bold">Schedule & Events</h1>
+          <button id="addEventBtn" class="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700 text-sm lg:text-base">
+            <i class="fas fa-plus mr-2"></i>Add Event
+          </button>
+        </div>
+      </header>
+
+      <div class="p-4 lg:p-6">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
+          <!-- Calendar -->
+          <div class="xl:col-span-2 bg-slate-800 rounded-lg p-4 lg:p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg lg:text-xl font-semibold">Calendar</h2>
+              <div class="flex items-center gap-2">
+                <button id="prevMonth" class="p-2 hover:bg-slate-700 rounded">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="currentMonth" class="text-lg font-medium px-4"></span>
+                <button id="nextMonth" class="p-2 hover:bg-slate-700 rounded">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+            <div id="calendar" class="grid grid-cols-7 gap-1 text-sm">
+              <!-- Calendar will be generated here -->
+            </div>
+          </div>
+
+          <!-- Upcoming Events -->
+          <div class="bg-slate-800 rounded-lg p-4 lg:p-6">
+            <h2 class="text-lg lg:text-xl font-semibold mb-4">Upcoming Events</h2>
+            <div id="upcomingEvents" class="space-y-3">
+              <div class="text-center p-4 text-slate-400">Loading...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Events Only -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Event Modal -->
+  <div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4">Add New Event</h3>
+      <form id="addForm">
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Event Title</label>
+          <input type="text" id="eventTitle" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Event Type</label>
+          <select id="eventType" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+            <option value="">Select Type...</option>
+            <option value="game">Game/Match</option>
+            <option value="training">Training Session</option>
+            <option value="meeting">Team Meeting</option>
+            <option value="tournament">Tournament</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Date</label>
+          <input type="date" id="eventDate" class="w-full bg-slate-700 border border-slate-600 rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Time</label>
+          <input type="time" id="eventTime" class="w-full bg-slate-700 border border-slate-600 rounded p-2">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Location</label>
+          <input type="text" id="eventLocation" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="Event location">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Opponent Team (for games)</label>
+          <input type="text" id="opponentTeam" class="w-full bg-slate-700 border border-slate-600 rounded p-2" placeholder="vs Team Name">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm mb-2">Description</label>
+          <textarea id="eventDescription" class="w-full bg-slate-700 border border-slate-600 rounded p-2" rows="3"></textarea>
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">Add Event</button>
+          <button type="button" id="cancelBtn" class="bg-slate-600 px-4 py-2 rounded hover:bg-slate-700">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    // Use CDN version for consistency with deploy
+    const { createClient } = window.supabase;
+    const supabase = createClient('https://guyppjhpjfzrfxldltjz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4');
+
+    let currentUser = null;
+    let currentTeam = null;
+    let currentDate = new Date();
+    let events = [];
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+
+    async function init() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = './login.html';
+          return;
+        }
+        currentUser = user;
+        
+        await loadUserTeam();
+        await loadEvents();
+        renderCalendar();
+        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+      } catch (error) {
+        console.error('Init error:', error);
+      }
+    }
+
+    async function loadUserTeam() {
+      try {
+        const { data: userProfile } = await supabase
+          .from('users')
+          .select('team_id, role, first_name, last_name')
+          .eq('id', currentUser.id)
+          .single();
+        
+        if (userProfile) {
+          document.getElementById('userRole').textContent = (userProfile.role || 'user').toUpperCase();
+          
+          if (userProfile.team_id) {
+            const { data: team } = await supabase
+              .from('teams')
+              .select('*')
+              .eq('id', userProfile.team_id)
+              .single();
+            currentTeam = team;
+          }
+        }
+      } catch (error) {
+        console.error('Load user team error:', error);
+      }
+    }
+
+    async function loadEvents() {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('event_date', { ascending: true });
+        
+        if (error) throw error;
+        
+        events = data || [];
+        renderUpcomingEvents();
+      } catch (error) {
+        console.error('Load events error:', error);
+        document.getElementById('upcomingEvents').innerHTML = '<div class="text-red-400 p-4">Error loading events</div>';
+      }
+    }
+
+    function renderCalendar() {
+      const calendar = document.getElementById('calendar');
+      const monthYear = document.getElementById('currentMonth');
+      
+      monthYear.textContent = `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+      
+      const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      const startDate = new Date(firstDay);
+      startDate.setDate(startDate.getDate() - firstDay.getDay());
+      
+      let calendarHTML = '';
+      
+      // Header
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      dayNames.forEach(day => {
+        calendarHTML += `<div class="p-2 text-center font-semibold text-slate-400">${day}</div>`;
+      });
+      
+      console.log('Total events:', events.length);
+      
+      // Calendar days
+      for (let i = 0; i < 42; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        
+        const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+        const isToday = date.toDateString() === new Date().toDateString();
+        const dateStr = date.toISOString().split('T')[0];
+        const dayEvents = events.filter(e => (e.event_date || e.date) === dateStr);
+        
+        if (dayEvents.length > 0) {
+          console.log(`Date ${dateStr} has ${dayEvents.length} events:`, dayEvents);
+        }
+        
+        const hasEvents = dayEvents.length > 0;
+        const bgClass = hasEvents ? 'bg-red-800 border-red-500' : (isCurrentMonth ? 'bg-slate-700' : 'bg-slate-800');
+        const textClass = hasEvents ? 'text-red-200 font-bold' : (isCurrentMonth ? 'text-slate-100' : 'text-slate-500');
+        
+        calendarHTML += `
+          <div class="p-2 min-h-[60px] border border-slate-700 ${bgClass} ${isToday ? 'ring-2 ring-blue-500' : ''} hover:bg-slate-600 cursor-pointer" onclick="selectDate('${dateStr}')">
+            <div class="text-sm ${textClass}">${date.getDate()}</div>
+            ${dayEvents.map(e => {
+              const title = e.event_title || e.title || 'Event';
+              return `<div class="text-xs bg-blue-600 rounded px-1 mt-1 truncate" title="${title}">${title}</div>`;
+            }).join('')}
+          </div>
+        `;
+      }
+      
+      calendar.innerHTML = calendarHTML;
+    }
+
+    function renderUpcomingEvents() {
+      const container = document.getElementById('upcomingEvents');
+      // Use actual today's date
+      const today = new Date().toISOString().split('T')[0];
+      
+      console.log('Today (fixed):', today);
+      console.log('All events raw:', events);
+      
+      // Try both field name variations
+      const upcoming = events.filter(e => {
+        const eventDate = e.event_date || e.date;
+        console.log('Event date:', eventDate, 'vs Today:', today, 'Compare:', eventDate >= today);
+        return eventDate >= today;
+      }).slice(0, 5);
+      
+      console.log('Filtered upcoming events:', upcoming);
+      
+      if (upcoming.length === 0) {
+        container.innerHTML = '<div class="text-slate-400 p-4">No upcoming events</div>';
+        return;
+      }
+      
+      container.innerHTML = upcoming.map(event => {
+        const eventDate = new Date(event.event_date || event.date);
+        const eventTitle = event.event_title || event.title || 'Event';
+        const eventType = event.event_type || event.type || 'other';
+        const eventTime = event.event_time || event.time || '';
+        const eventLocation = event.location || event.venue || '';
+        
+        const typeColors = {
+          game: 'bg-red-900 text-red-300',
+          training: 'bg-blue-900 text-blue-300',
+          meeting: 'bg-yellow-900 text-yellow-300',
+          tournament: 'bg-purple-900 text-purple-300',
+          other: 'bg-gray-900 text-gray-300'
+        };
+        
+        return `
+          <div class="bg-slate-700 p-3 rounded">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="font-medium">${eventTitle}</div>
+                <div class="text-sm text-slate-400">${eventDate.toLocaleDateString()} ${eventTime}</div>
+                <div class="text-sm text-slate-400">${eventLocation}</div>
+                <span class="inline-block px-2 py-1 text-xs rounded mt-1 ${typeColors[eventType] || typeColors.other}">${eventType}</span>
+              </div>
+              <button onclick="deleteEvent('${event.id}')" class="text-red-400 hover:text-red-300 ml-2">
+                <i class="fas fa-trash text-sm"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+
+
+    // Event listeners
+    document.getElementById('addEventBtn').addEventListener('click', () => {
+      document.getElementById('addModal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+      document.getElementById('addModal').classList.add('hidden');
+    });
+
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      try {
+        const eventData = {
+          event_title: document.getElementById('eventTitle').value,
+          event_type: document.getElementById('eventType').value,
+          event_date: document.getElementById('eventDate').value,
+          event_time: document.getElementById('eventTime').value || null,
+          location: document.getElementById('eventLocation').value || null,
+          event_description: document.getElementById('eventDescription').value || null,
+          status: 'scheduled',
+          team_id: currentTeam?.id || null,
+          created_by: currentUser.id
+        };
+        
+        // Add opponent team to description if provided
+        const opponentTeam = document.getElementById('opponentTeam').value;
+        if (opponentTeam) {
+          eventData.event_description = (eventData.event_description || '') + `\nOpponent: ${opponentTeam}`;
+        }
+        
+        const { error } = await supabase.from('events').insert(eventData);
+        
+        if (error) throw error;
+        
+        document.getElementById('addModal').classList.add('hidden');
+        document.getElementById('addForm').reset();
+        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+        
+        await loadEvents();
+        renderCalendar();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = './login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    window.selectDate = (dateStr) => {
+      document.getElementById('eventDate').value = dateStr;
+      document.getElementById('addModal').classList.remove('hidden');
+    };
+
+    window.deleteEvent = async (eventId) => {
+      if (!confirm('Delete this event?')) return;
+      
+      try {
+        const { error } = await supabase.from('events').delete().eq('id', eventId);
+        if (error) throw error;
+        
+        await loadEvents();
+        renderCalendar();
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    };
+
+    init();
+  </script>
+</body>
+</html>

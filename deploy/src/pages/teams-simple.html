@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Team Management - Sports Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="../css/theme.css">
 </head>
 <body class="bg-slate-900 text-slate-100">
   <div class="min-h-screen p-6">
@@ -170,12 +169,6 @@
 
     // Load teams when page loads
     loadTeams();
-    
-    // Set up periodic refresh to catch coach assignment changes
-    setInterval(loadTeams, 30000); // Refresh every 30 seconds
-    
-    // Make loadTeams globally available for external refresh calls
-    window.loadTeams = loadTeams;
   </script>
 </body>
 </html>

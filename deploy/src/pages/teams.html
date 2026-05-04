@@ -6,7 +6,7 @@
   <title>Team Management - Sports Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="../css/theme.css">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-slate-100">
   <div class="min-h-screen">
@@ -235,12 +235,6 @@
 
     // Load teams when page loads
     loadTeams();
-    
-    // Set up periodic refresh to catch coach assignment changes
-    setInterval(loadTeams, 30000); // Refresh every 30 seconds
-    
-    // Make loadTeams globally available for external refresh calls
-    window.loadTeams = loadTeams;
   </script>
 </body>
 </html>

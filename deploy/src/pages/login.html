@@ -6,6 +6,7 @@
   <title>Sports Hub - Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gradient-to-br from-slate-900 to-slate-800">
   <div class="min-h-screen flex items-center justify-center px-4 py-4 lg:py-8">
@@ -214,7 +215,7 @@
       try {
         await authManager.login(email, password);
         showSuccess('Login successful! Redirecting...');
-        setTimeout(() => window.location.href = '/src/pages/dashboard.html', 1500);
+        setTimeout(() => window.location.href = './dashboard.html', 1500);
       } catch (error) {
         showError(error.message);
       }

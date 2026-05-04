@@ -1,0 +1,291 @@
+/* Sports Hub Deploy - Dark Theme CSS */
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-quaternary: #475569;
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border-primary: #475569;
+  --border-secondary: #334155;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --accent-purple: #8b5cf6;
+}
+
+/* Base overrides */
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Remove all white backgrounds */
+.bg-white,
+.bg-gray-100,
+.bg-gray-50 {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Fix black text */
+.text-black,
+.text-gray-900,
+.text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+/* Card backgrounds */
+.bg-slate-800 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.bg-slate-700 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.bg-slate-600 {
+  background-color: var(--bg-quaternary) !important;
+}
+
+/* Form elements */
+input, select, textarea {
+  background-color: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-blue) !important;
+  outline: 2px solid var(--accent-blue) !important;
+  outline-offset: 2px;
+}
+
+/* Button hover states */
+.bg-blue-600:hover, .hover\\:bg-blue-700:hover {
+  background-color: #2563eb !important;
+}
+
+.bg-green-600:hover, .hover\\:bg-green-700:hover {
+  background-color: #059669 !important;
+}
+
+.bg-red-600:hover, .hover\\:bg-red-700:hover {
+  background-color: #dc2626 !important;
+}
+
+.bg-purple-600:hover, .hover\\:bg-purple-700:hover {
+  background-color: #7c3aed !important;
+}
+
+/* Modal backgrounds */
+.fixed.inset-0 {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Table styles */
+table {
+  background-color: var(--bg-secondary) !important;
+}
+
+th {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+td {
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+tr:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Status badges */
+.bg-green-900 {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+}
+
+.bg-red-900 {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
+}
+
+.bg-yellow-900 {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #fcd34d !important;
+}
+
+.bg-blue-900 {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  color: #93c5fd !important;
+}
+
+.bg-purple-900 {
+  background-color: rgba(139, 92, 246, 0.2) !important;
+  color: #c4b5fd !important;
+}
+
+/* Calendar specific */
+.calendar-day {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-secondary) !important;
+}
+
+.calendar-day:hover {
+  background-color: var(--bg-quaternary) !important;
+}
+
+.calendar-day.has-events {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+  border-color: var(--accent-blue) !important;
+}
+
+/* Mobile specific */
+@media (max-width: 768px) {
+  /* Ensure mobile cards are dark */
+  .mobile-card {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+    color: var(--text-primary) !important;
+  }
+  
+  /* Mobile text readability */
+  .text-xl, .text-2xl, .text-3xl {
+    color: var(--text-primary) !important;
+  }
+  
+  /* Mobile sidebar */
+  #sidebar {
+    background-color: var(--bg-secondary) !important;
+    border-right: 1px solid var(--border-secondary) !important;
+  }
+  
+  /* Mobile menu button */
+  #mobileMenuBtn, #mobileMenuToggle {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-primary) !important;
+  }
+  
+  /* Mobile overlays */
+  #overlay, #mobileMenuOverlay {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
+/* Navigation */
+.nav-link.active {
+  background-color: var(--accent-blue) !important;
+  color: var(--text-primary) !important;
+}
+
+.nav-link:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Dropdown menus */
+.dropdown-menu, #userDropdown {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-secondary) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Loading states */
+.loading {
+  color: var(--text-muted) !important;
+}
+
+/* Error states */
+.error, .bg-red-800 {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Success states */
+.success, .bg-green-800 {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-quaternary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-primary);
+}
+
+/* Print styles for medical records */
+@media print {
+  .print-content {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  .print-content * {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+
+/* Ensure all text is readable */
+* {
+  color: inherit;
+}
+
+/* Fix any remaining contrast issues */
+.text-white {
+  color: var(--text-primary) !important;
+}
+
+.text-slate-100 {
+  color: var(--text-primary) !important;
+}
+
+.text-slate-200 {
+  color: var(--text-secondary) !important;
+}
+
+.text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+/* Login page specific */
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--bg-primary), var(--bg-secondary)) !important;
+}
+
+/* Ensure proper contrast for all interactive elements */
+button:hover {
+  opacity: 0.9;
+}
+
+a:hover {
+  opacity: 0.8;
+}

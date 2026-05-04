@@ -235,12 +235,6 @@
 
     // Load teams when page loads
     loadTeams();
-    
-    // Set up periodic refresh to catch coach assignment changes
-    setInterval(loadTeams, 30000); // Refresh every 30 seconds
-    
-    // Make loadTeams globally available for external refresh calls
-    window.loadTeams = loadTeams;
   </script>
 </body>
 </html>

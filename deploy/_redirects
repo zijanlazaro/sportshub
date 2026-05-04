@@ -1,0 +1,23 @@
+# Netlify redirects file for Sports Hub
+
+# Redirect old src/pages paths to new pages paths
+/src/pages/login.html /pages/login.html 301
+/src/pages/dashboard.html /pages/dashboard.html 301
+/src/pages/medical.html /pages/medical.html 301
+/src/pages/training.html /pages/training.html 301
+/src/pages/profile.html /pages/profile.html 301
+/src/pages/* /pages/:splat 301
+
+# Redirect root to pages directory
+/login /pages/login.html 200
+/dashboard /pages/dashboard.html 200
+/medical /pages/medical.html 200
+/training /pages/training.html 200
+/schedule /pages/schedule.html 200
+
+# Handle JS files correctly
+/js/* /js/:splat 200
+/pages/js/* /js/:splat 200
+
+# Fallback - must be last
+/* /index.html 200
