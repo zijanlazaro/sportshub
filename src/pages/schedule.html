@@ -9,23 +9,94 @@
   <link rel="stylesheet" href="../css/theme.css">
 </head>
 <body class="bg-slate-900 text-slate-100">
-  <div class="min-h-screen p-6">
-    <div class="max-w-6xl mx-auto">
-      <!-- Header -->
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h1 class="text-3xl font-bold">Schedule & Events</h1>
-          <p class="text-slate-400">Manage team calendar and events</p>
+  <div class="flex h-screen">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuBtn" class="lg:hidden fixed top-4 left-4 z-50 bg-slate-800 p-2 rounded-lg">
+      <i class="fas fa-bars text-white"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto fixed lg:relative h-full z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
+      <div class="p-6 border-b border-slate-700">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-blue-600 p-2 rounded-lg">
+            <i class="fas fa-basketball-ball text-white"></i>
+          </div>
+          <h1 class="text-xl font-bold">Sports Hub</h1>
         </div>
-        <div class="flex gap-4">
-          <button id="addEventBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
-            <i class="fas fa-plus mr-2"></i> Add Event
-          </button>
-          <a href="./dashboard.html" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded-lg transition">
-            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
-          </a>
+        <p id="userRole" class="text-xs text-slate-400">Loading...</p>
+      </div>
+
+      <nav class="p-4 space-y-2">
+        <a href="./dashboard.html" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="overview">
+          <i class="fas fa-chart-line mr-2"></i> Overview
+        </a>
+        <a href="./dashboard.html" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="players">
+          <i class="fas fa-users mr-2"></i> Players
+        </a>
+        <a href="./dashboard.html" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="training">
+          <i class="fas fa-dumbbell mr-2"></i> Training
+        </a>
+        <a href="./dashboard.html" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="medical">
+          <i class="fas fa-hospital mr-2"></i> Medical
+        </a>
+        <a href="./schedule.html" class="nav-link active block px-4 py-2 rounded-lg bg-blue-600 text-white" data-page="schedule">
+          <i class="fas fa-calendar mr-2"></i> Schedule
+        </a>
+        <a href="./dashboard.html" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="teams">
+          <i class="fas fa-users-cog mr-2"></i> Manage Teams
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700 mt-auto">
+        <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto lg:ml-0">
+      <!-- Top Bar -->
+      <div class="bg-slate-800 border-b border-slate-700 p-4 lg:p-6 pl-16 lg:pl-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+          <h2 id="pageTitle" class="text-xl lg:text-2xl font-bold">Schedule & Events</h2>
+        </div>
+          <div class="flex items-center gap-2 lg:gap-4">
+            <button id="darkModeToggle" class="text-slate-400 hover:text-white">
+              <i class="fas fa-moon"></i>
+            </button>
+            <div id="userMenu" class="relative">
+              <button id="userMenuBtn" class="flex items-center gap-2 px-2 lg:px-4 py-2 hover:bg-slate-700 rounded-lg transition">
+                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <i class="fas fa-user text-white text-sm"></i>
+                </div>
+                <span id="userName" class="hidden lg:block">User</span>
+              </button>
+            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700">
+              <a href="/src/pages/profile.html" class="block px-4 py-2 text-sm hover:bg-slate-700 rounded-t-lg">
+                <i class="fas fa-user-cog mr-2"></i> Profile Settings
+              </a>
+              <button id="logoutFromMenu" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-700 rounded-b-lg">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- Page Content -->
+      <div class="p-4 lg:p-6">
+        <div class="max-w-6xl mx-auto">
+          <!-- Add Event Button -->
+          <div class="mb-6">
+            <button id="addEventBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+              <i class="fas fa-plus mr-2"></i> Add Event
+            </button>
+          </div>
 
       <!-- Calendar + Upcoming -->
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -149,17 +220,32 @@
       other:           'bg-slate-700 text-slate-300',
     };
 
+    // Loading state management
+    function showLoading() {
+      document.getElementById('upcomingEvents').innerHTML = '<p class="text-slate-400 text-sm">Loading events...</p>';
+      document.getElementById('eventsList').innerHTML = '<p class="text-slate-400 text-sm">Loading events...</p>';
+    }
+
     async function loadEvents() {
+      showLoading();
       try {
         const { data, error } = await supabase
           .from('events')
           .select('*')
           .order('event_date', { ascending: true });
-        events = error ? [] : (data || []);
+        
+        if (error) {
+          console.error('Failed to load events:', error);
+          events = [];
+        } else {
+          events = data || [];
+          console.log('Loaded events:', events.length, 'events');
+        }
       } catch (e) {
         console.error('Failed to load events:', e);
         events = [];
       }
+      
       renderCalendar();
       renderUpcoming();
       renderAllEvents();
@@ -215,7 +301,7 @@
         el.innerHTML = `<div class="text-sm font-medium">${date.getDate()}</div>${dotsHtml}`;
 
         if (isCurrentMonth && dayEvents.length > 0) {
-          el.title = dayEvents.map(e => e.event_title).join(', ');
+          el.title = dayEvents.map(e => e.event_title || e.title).join(', ');
         }
 
         grid.appendChild(el);
@@ -252,7 +338,7 @@
           <div class="flex items-start gap-2">
             <span class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${TYPE_COLORS[e.event_type] || 'bg-slate-400'}"></span>
             <div class="min-w-0">
-              <p class="font-medium text-sm truncate">${e.event_title}</p>
+              <p class="font-medium text-sm truncate">${e.event_title || e.title}</p>
               <p class="text-slate-400 text-xs">${formatDate(e.event_date)}${e.event_time ? ' · ' + formatTime(e.event_time) : ''}</p>
               ${e.location ? `<p class="text-slate-500 text-xs truncate">${e.location}</p>` : ''}
             </div>
@@ -273,14 +359,22 @@
         <div class="bg-slate-700 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold">${e.event_title}</span>
+              <span class="font-semibold">${e.event_title || e.title}</span>
               <span class="text-xs px-2 py-0.5 rounded-full ${TYPE_BADGES[e.event_type] || 'bg-slate-600 text-slate-300'} capitalize">${e.event_type.replace('_', ' ')}</span>
             </div>
             <div class="text-slate-400 text-sm mt-1 flex flex-wrap gap-x-4 gap-y-1">
               <span><i class="fas fa-calendar mr-1"></i>${formatDate(e.event_date)}${e.event_time ? ' at ' + formatTime(e.event_time) : ''}</span>
               ${e.location ? `<span><i class="fas fa-map-marker-alt mr-1"></i>${e.location}</span>` : ''}
             </div>
-            ${e.event_description ? `<p class="text-slate-500 text-sm mt-1 line-clamp-2">${e.event_description}</p>` : ''}
+            ${e.event_description || e.description ? `<p class="text-slate-500 text-sm mt-1 line-clamp-2">${e.event_description || e.description}</p>` : ''}
+          </div>
+          <div class="flex gap-2">
+            <button onclick="editEvent('${e.id}')" class="text-blue-400 hover:text-blue-300 transition" title="Edit Event">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button onclick="deleteEvent('${e.id}')" class="text-red-400 hover:text-red-300 transition" title="Delete Event">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
         </div>
       `).join('');
@@ -318,30 +412,225 @@
       const errEl = document.getElementById('formError');
       errEl.classList.add('hidden');
 
-      const { data: { user } } = await supabase.auth.getUser();
+      // Show loading state
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Saving...';
+      submitBtn.disabled = true;
 
-      const payload = {
-        event_title:       document.getElementById('eventTitle').value.trim(),
-        event_type:        document.getElementById('eventType').value,
-        event_date:        document.getElementById('eventDate').value,
-        event_time:        document.getElementById('eventTime').value || null,
-        location:          document.getElementById('eventLocation').value.trim() || null,
-        event_description: document.getElementById('eventDescription').value.trim() || null,
-        created_by:        user?.id || null,
-        status:            'upcoming',
-      };
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
 
-      const { error } = await supabase.from('events').insert(payload);
+        const payload = {
+          event_title:       document.getElementById('eventTitle').value.trim(),
+          event_type:        document.getElementById('eventType').value,
+          event_date:        document.getElementById('eventDate').value,
+          event_time:        document.getElementById('eventTime').value || null,
+          location:          document.getElementById('eventLocation').value.trim() || null,
+          event_description: document.getElementById('eventDescription').value.trim() || null,
+          created_by:        user?.id || null,
+        };
 
-      if (error) {
-        errEl.textContent = 'Failed to save event: ' + error.message;
-        errEl.classList.remove('hidden');
+        const { error } = await supabase.from('events').insert(payload);
+
+        if (error) {
+          errEl.textContent = 'Failed to save event: ' + error.message;
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        closeModal();
+        showLoading(); // Show loading while refreshing
+        await loadEvents();
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Edit event function
+    async function editEvent(eventId) {
+      const event = events.find(e => e.id === eventId);
+      if (!event) {
+        alert('Event not found');
         return;
       }
 
-      closeModal();
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
+      modal.innerHTML = `
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 w-full max-w-md mx-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Edit Event</h3>
+            <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+          </div>
+          <form id="editEventForm" class="space-y-4">
+            <div>
+              <label class="block text-sm text-slate-400 mb-1">Title *</label>
+              <input type="text" id="editEventTitle" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" value="${event.event_title || event.title}">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm text-slate-400 mb-1">Type *</label>
+                <select id="editEventType" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white">
+                  <option value="game" ${event.event_type === 'game' ? 'selected' : ''}>Game</option>
+                  <option value="training" ${event.event_type === 'training' ? 'selected' : ''}>Training</option>
+                  <option value="meeting" ${event.event_type === 'meeting' ? 'selected' : ''}>Meeting</option>
+                  <option value="tournament" ${event.event_type === 'tournament' ? 'selected' : ''}>Tournament</option>
+                  <option value="other" ${event.event_type === 'other' ? 'selected' : ''}>Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm text-slate-400 mb-1">Date *</label>
+                <input type="date" id="editEventDate" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" value="${event.event_date}">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm text-slate-400 mb-1">Time</label>
+                <input type="time" id="editEventTime" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" value="${event.event_time || ''}">
+              </div>
+              <div>
+                <label class="block text-sm text-slate-400 mb-1">Location</label>
+                <input type="text" id="editEventLocation" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" value="${event.location || ''}" placeholder="Venue">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm text-slate-400 mb-1">Description</label>
+              <textarea id="editEventDescription" rows="2" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white" placeholder="Optional details">${event.event_description || event.description || ''}</textarea>
+            </div>
+            <div id="editFormError" class="text-red-400 text-sm hidden"></div>
+            <div class="flex gap-3 pt-2">
+              <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg transition font-medium">
+                Update Event
+              </button>
+              <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded-lg transition">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      modal.querySelector('#editEventForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errEl = document.getElementById('editFormError');
+        errEl.classList.add('hidden');
+
+        // Show loading state
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Updating...';
+        submitBtn.disabled = true;
+
+        try {
+          const payload = {
+            event_title:       document.getElementById('editEventTitle').value.trim(),
+            event_type:        document.getElementById('editEventType').value,
+            event_date:        document.getElementById('editEventDate').value,
+            event_time:        document.getElementById('editEventTime').value || null,
+            location:          document.getElementById('editEventLocation').value.trim() || null,
+            event_description: document.getElementById('editEventDescription').value.trim() || null,
+          };
+
+          const { error } = await supabase
+            .from('events')
+            .update(payload)
+            .eq('id', eventId);
+
+          if (error) {
+            errEl.textContent = 'Failed to update event: ' + error.message;
+            errEl.classList.remove('hidden');
+            return;
+          }
+
+          modal.remove();
+          showLoading(); // Show loading while refreshing
+          await loadEvents();
+        } finally {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+    }
+
+    // Delete event function
+    async function deleteEvent(eventId) {
+      if (!confirm('Are you sure you want to delete this event?')) return;
+      
+      showLoading(); // Show loading while deleting
+      
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) {
+        alert('Failed to delete event: ' + error.message);
+        await loadEvents(); // Reload to show original state
+        return;
+      }
+
       await loadEvents();
+    }
+
+    // Make functions globally available
+    window.editEvent = editEvent;
+    window.deleteEvent = deleteEvent;
+
+    // Sidebar navigation functionality
+    // User menu toggle
+    document.getElementById('userMenuBtn').addEventListener('click', () => {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.classList.toggle('hidden');
     });
+
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('mobileMenuBtn');
+      if (sidebar && toggle && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#userMenu')) {
+        document.getElementById('userDropdown').classList.add('hidden');
+      }
+    });
+
+    // Logout functionality
+    const logoutFunction = async () => {
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        window.location.href = '/src/pages/login.html';
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', logoutFunction);
+    document.getElementById('logoutFromMenu').addEventListener('click', logoutFunction);
 
     // Init — fallback to "no events" if Supabase never responds
     const fallback = setTimeout(() => {

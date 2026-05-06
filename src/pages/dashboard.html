@@ -2199,27 +2199,33 @@
       const supabaseUrl = 'https://guyppjhpjfzrfxldltjz.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4';
 
+      const updatePayload = {
+        event_title: eventData.event_title,
+        event_description: eventData.event_description || '',
+        event_date: eventData.event_date,
+        event_time: eventData.event_time,
+        event_type: eventData.event_type,
+        location: eventData.location
+      };
+
+      console.log('Updating event:', eventId, updatePayload);
+
       const response = await fetch(`${supabaseUrl}/rest/v1/events?id=eq.${eventId}`, {
         method: 'PATCH',
         headers: {
           'apikey': supabaseKey,
           'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
         },
-        body: JSON.stringify({
-          event_title: eventData.event_title,
-          event_description: eventData.event_description || '',
-          event_date: eventData.event_date,
-          event_time: eventData.event_time,
-          event_type: eventData.event_type,
-          location: eventData.location
-        })
+        body: JSON.stringify(updatePayload)
       });
 
       if (!response.ok) {
         let errorMessage = `Failed to update event: ${response.status}`;
         try {
           const errorText = await response.text();
+          console.error('Update error response:', errorText);
           if (errorText) {
             try {
               const errorData = JSON.parse(errorText);
@@ -2390,7 +2396,7 @@
     document.addEventListener('click', (e) => {
       const sidebar = document.getElementById('sidebar');
       const toggle = document.getElementById('mobileMenuBtn');
-      if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      if (sidebar && toggle && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
       }
