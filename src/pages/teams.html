@@ -236,8 +236,13 @@
     // Load teams when page loads
     loadTeams();
     
-    // Set up periodic refresh to catch coach assignment changes
-    setInterval(loadTeams, 30000); // Refresh every 30 seconds
+    // Set up message listener for manual refreshes instead of auto-refresh
+    window.addEventListener('message', (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data.type === 'REFRESH_TEAM_DATA') {
+        loadTeams();
+      }
+    });
     
     // Make loadTeams globally available for external refresh calls
     window.loadTeams = loadTeams;

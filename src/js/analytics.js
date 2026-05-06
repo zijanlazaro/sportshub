@@ -19,6 +19,9 @@ export async function getPlayerAvailabilityStatus(playerId) {
   return data;
 }
 
+// Global cache for work readiness data to prevent duplicate API calls
+const workReadinessAnalyticsCache = new Map();
+
 /**
  * Get team availability overview
  */
@@ -37,21 +40,36 @@ export async function getTeamAvailabilityOverview(teamId) {
       };
     }
 
-    // Get work readiness for each player
+    // Get work readiness for each player with caching
     const playerStatuses = await Promise.all(
       players.map(async (player) => {
+        // Check cache first
+        if (workReadinessAnalyticsCache.has(player.id)) {
+          const cached = workReadinessAnalyticsCache.get(player.id);
+          return {
+            id: player.id,
+            status: cached.status,
+            work_readiness: cached.status
+          };
+        }
+
         try {
           const workReadiness = await checkPlayerWorkReadiness(player.id);
+          // Cache the result
+          workReadinessAnalyticsCache.set(player.id, workReadiness);
           return {
             id: player.id,
             status: workReadiness.status,
             work_readiness: workReadiness.status
           };
         } catch (error) {
+          const defaultReadiness = { status: 'Ready to Play', work_readiness: 'Ready to Play' };
+          // Cache default result to prevent repeated failed calls
+          workReadinessAnalyticsCache.set(player.id, defaultReadiness);
           return {
             id: player.id,
-            status: 'Ready to Play',
-            work_readiness: 'Ready to Play'
+            status: defaultReadiness.status,
+            work_readiness: defaultReadiness.work_readiness
           };
         }
       })
@@ -71,6 +89,17 @@ export async function getTeamAvailabilityOverview(teamId) {
       players: [],
       summary: { total: 0, available: 0, injured: 0, restricted: 0, unknown: 0 }
     };
+  }
+}
+
+/**
+ * Clear work readiness analytics cache
+ */
+export function clearWorkReadinessAnalyticsCache(playerId = null) {
+  if (playerId) {
+    workReadinessAnalyticsCache.delete(playerId);
+  } else {
+    workReadinessAnalyticsCache.clear();
   }
 }
 
@@ -241,17 +270,27 @@ export async function getTrainingAttendanceAnalytics(teamId, days = 30) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
+  // First get the team name
+  const { data: team } = await supabase
+    .from('teams')
+    .select('name')
+    .eq('id', teamId)
+    .single();
+
+  if (!team) {
+    return {
+      total_sessions: 0,
+      avg_attendance_rate: 0,
+      total_attendees: 0,
+      sessions: []
+    };
+  }
+
+  // Then get attendance data for that team
   const { data, error } = await supabase
     .from('training_attendance_summary')
     .select('*')
-    .eq('team_name', async () => {
-      const { data: team } = await supabase
-        .from('teams')
-        .select('name')
-        .eq('id', teamId)
-        .single();
-      return team?.name;
-    })
+    .eq('team_name', team.name)
     .gte('session_date', startDate.toISOString().split('T')[0])
     .order('session_date', { ascending: false });
 

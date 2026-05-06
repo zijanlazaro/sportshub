@@ -4,7 +4,7 @@
  */
 
 import { supabase } from './supabaseClient.js';
-import { debouncedRefreshTeamData } from './teamRefresh.js';
+import { debouncedRefreshTeamData, debouncedRefreshDashboardData } from './teamRefresh.js';
 
 /**
  * Get user profile by user ID with session validation
@@ -92,8 +92,12 @@ export async function updateUserProfile(userId, profileData) {
       if (teamError) console.warn('Failed to update team coach:', teamError);
     }
     
-    // Refresh team data across all pages
-    debouncedRefreshTeamData();
+    // Only refresh dashboard data if the user is on dashboard page
+    if (window.location.pathname.includes('dashboard.html')) {
+      debouncedRefreshDashboardData();
+    } else {
+      debouncedRefreshTeamData();
+    }
   }
 
   return data;

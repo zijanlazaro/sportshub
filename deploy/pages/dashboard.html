@@ -1,855 +1,1766 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Sports Hub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="../css/theme.css">
-</head>
-<body class="bg-slate-900 text-slate-100">
-  <div class="flex h-screen">
-    <!-- Mobile Menu Overlay -->
-    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
-    
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto fixed lg:relative inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
-      <div class="p-6 border-b border-slate-700">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2 rounded-lg">
-              <i class="fas fa-futbol text-white"></i>
-            </div>
-            <h1 class="text-xl font-bold">Sports Hub</h1>
-          </div>
-          <button id="closeMobileMenu" class="lg:hidden text-slate-400 hover:text-white">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <p id="userRole" class="text-xs text-slate-400 mt-2">Loading...</p>
-      </div>
-
-      <nav class="p-4 space-y-2">
-        <a href="#" class="nav-link active block px-4 py-2 rounded-lg bg-blue-600 text-white" data-page="overview">
-          <i class="fas fa-chart-line mr-2"></i> Overview
-        </a>
-        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="players">
-          <i class="fas fa-users mr-2"></i> Players
-        </a>
-        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="training">
-          <i class="fas fa-dumbbell mr-2"></i> Training
-        </a>
-        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="medical">
-          <i class="fas fa-hospital mr-2"></i> Medical
-        </a>
-        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="schedule">
-          <i class="fas fa-calendar mr-2"></i> Schedule
-        </a>
-        <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="teams">
-          <i class="fas fa-users-cog mr-2"></i> Manage Teams
-        </a>
-      </nav>
-
-      <div class="p-4 border-t border-slate-700 mt-auto">
-        <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
-          <i class="fas fa-sign-out-alt mr-2"></i> Logout
-        </button>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto lg:ml-0">
-      <!-- Top Bar -->
-      <div class="bg-slate-800 border-b border-slate-700 p-4 lg:p-6 flex justify-between items-center sticky top-0 z-30">
-        <div class="flex items-center gap-4">
-          <button id="mobileMenuToggle" class="lg:hidden text-slate-400 hover:text-white">
-            <i class="fas fa-bars text-xl"></i>
-          </button>
-          <h2 id="pageTitle" class="text-xl lg:text-2xl font-bold">Dashboard</h2>
-        </div>
-        <div class="flex items-center gap-2 lg:gap-4">
-          <button id="darkModeToggle" class="text-slate-400 hover:text-white hidden sm:block">
-            <i id="darkModeIcon" class="fas fa-sun"></i>
-          </button>
-          <div id="userMenu" class="relative">
-            <button id="userMenuBtn" class="flex items-center gap-2 px-2 lg:px-4 py-2 hover:bg-slate-700 rounded-lg transition">
-              <div class="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <i class="fas fa-user text-white text-sm"></i>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sports Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/theme.css">
+  </head>
+  <body class="bg-slate-900 text-slate-100">
+    <div class="flex h-screen">
+      <!-- Mobile Menu Overlay -->
+      <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
+      
+      <!-- Sidebar -->
+      <aside id="sidebar" class="w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto fixed lg:relative inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div class="p-6 border-b border-slate-700">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="bg-blue-600 p-2 rounded-lg">
+                <i class="fas fa-futbol text-white"></i>
               </div>
-              <span id="userName" class="hidden sm:block">User</span>
+              <h1 class="text-xl font-bold">Sports Hub</h1>
+            </div>
+            <button id="closeMobileMenu" class="lg:hidden text-slate-400 hover:text-white">
+              <i class="fas fa-times"></i>
             </button>
-            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700">
-              <a href="./profile.html" class="block px-4 py-2 text-sm hover:bg-slate-700 rounded-t-lg">
-                <i class="fas fa-user-cog mr-2"></i> Profile Settings
-              </a>
-              <button id="logoutFromMenu" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-700 rounded-b-lg">
-                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </div>
+          <p id="userRole" class="text-xs text-slate-400 mt-2">Loading...</p>
+        </div>
+
+        <nav class="p-4 space-y-2">
+          <a href="#" class="nav-link active block px-4 py-2 rounded-lg bg-blue-600 text-white" data-page="overview">
+            <i class="fas fa-chart-line mr-2"></i> Overview
+          </a>
+          <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="players">
+            <i class="fas fa-users mr-2"></i> Players
+          </a>
+          <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="training">
+            <i class="fas fa-dumbbell mr-2"></i> Training
+          </a>
+          <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="medical">
+            <i class="fas fa-hospital mr-2"></i> Medical
+          </a>
+          <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="schedule">
+            <i class="fas fa-calendar mr-2"></i> Schedule
+          </a>
+          <a href="#" class="nav-link block px-4 py-2 rounded-lg hover:bg-slate-700 transition" data-page="teams">
+            <i class="fas fa-users-cog mr-2"></i> Manage Teams
+          </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-700 mt-auto">
+          <button id="logoutBtn" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto lg:ml-0">
+        <!-- Top Bar -->
+        <div class="bg-slate-800 border-b border-slate-700 p-4 lg:p-6 flex justify-between items-center sticky top-0 z-30">
+          <div class="flex items-center gap-4">
+            <button id="mobileMenuToggle" class="lg:hidden text-slate-400 hover:text-white">
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h2 id="pageTitle" class="text-xl lg:text-2xl font-bold">Dashboard</h2>
+          </div>
+          <div class="flex items-center gap-2 lg:gap-4">
+            <button id="darkModeToggle" class="text-slate-400 hover:text-white hidden sm:block">
+              <i id="darkModeIcon" class="fas fa-sun"></i>
+            </button>
+            <div id="userMenu" class="relative">
+              <button id="userMenuBtn" class="flex items-center gap-2 px-2 lg:px-4 py-2 hover:bg-slate-700 rounded-lg transition">
+                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <i class="fas fa-user text-white text-sm"></i>
+                </div>
+                <span id="userName" class="hidden sm:block">User</span>
+              </button>
+              <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700">
+                <a href="./profile.html" class="block px-4 py-2 text-sm hover:bg-slate-700 rounded-t-lg">
+                  <i class="fas fa-user-cog mr-2"></i> Profile Settings
+                </a>
+                <button id="logoutFromMenu" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-700 rounded-b-lg">
+                  <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="p-4 lg:p-6">
+          <!-- Overview Page -->
+          <div id="overviewPage" class="page-content">
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+              <div class="bg-slate-800 p-3 lg:p-6 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-slate-400 text-xs lg:text-sm">Total Players</p>
+                    <p class="text-xl lg:text-3xl font-bold" id="totalPlayers">-</p>
+                  </div>
+                  <i class="fas fa-users text-blue-500 text-xl lg:text-3xl"></i>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-slate-400 text-sm">Available Players</p>
+                    <p class="text-3xl font-bold text-green-400" id="availablePlayers">-</p>
+                  </div>
+                  <i class="fas fa-check-circle text-green-500 text-3xl"></i>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-slate-400 text-sm">Injured Players</p>
+                    <p class="text-3xl font-bold text-red-400" id="injuredPlayers">-</p>
+                  </div>
+                  <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-slate-400 text-sm">Team Fitness</p>
+                    <p class="text-3xl font-bold text-purple-400" id="teamFitness">-</p>
+                  </div>
+                  <i class="fas fa-heartbeat text-purple-500 text-3xl"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Player Availability Status -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h3 class="text-lg font-semibold mb-4">
+                  <i class="fas fa-user-check mr-2"></i> Player Availability Status
+                </h3>
+                <div id="availabilityChart" class="space-y-3">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h3 class="text-lg font-semibold mb-4">
+                  <i class="fas fa-chart-line mr-2"></i> Performance Trends (30d)
+                </h3>
+                <div id="performanceTrends" class="space-y-3">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medical & Training Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h3 class="text-lg font-semibold mb-4">
+                  <i class="fas fa-hospital mr-2"></i> Medical Overview
+                </h3>
+                <div id="medicalOverview" class="space-y-2">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h3 class="text-lg font-semibold mb-4">
+                  <i class="fas fa-dumbbell mr-2"></i> Training Stats (30d)
+                </h3>
+                <div id="trainingStats" class="space-y-2">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h3 class="text-lg font-semibold mb-4">
+                  <i class="fas fa-calendar-alt mr-2"></i> Upcoming Events (30d)
+                </h3>
+                <div id="upcomingEvents" class="space-y-2">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Players Page -->
+          <div id="playersPage" class="page-content hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h3 class="text-xl font-semibold">Team Players</h3>
+              <button id="addPlayerBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition w-full sm:w-auto">
+                <i class="fas fa-plus mr-2"></i> Add Player
               </button>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Page Content -->
-      <div class="p-4 lg:p-6">
-        <!-- Overview Page -->
-        <div id="overviewPage" class="page-content">
-          <!-- Key Metrics -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
-            <div class="bg-slate-800 p-3 lg:p-6 rounded-lg border border-slate-700">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-slate-400 text-xs lg:text-sm">Total Players</p>
-                  <p class="text-xl lg:text-3xl font-bold" id="totalPlayers">-</p>
+            <!-- Player Availability Filter -->
+            <div class="mb-4 flex flex-wrap gap-2">
+              <button class="availability-filter active bg-blue-600 text-white px-3 py-1 rounded text-sm" data-status="all">All</button>
+              <button class="availability-filter bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm" data-status="available">Available</button>
+              <button class="availability-filter bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm" data-status="injured">Injured</button>
+              <button class="availability-filter bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm" data-status="restricted">Restricted</button>
+            </div>
+
+            <div class="bg-slate-800 rounded-lg border border-slate-700">
+              <!-- Mobile Card View -->
+              <div class="lg:hidden space-y-3 p-4">
+                <div id="playersCardView">
+                  <div class="text-center p-4 text-slate-400">Loading...</div>
                 </div>
-                <i class="fas fa-users text-blue-500 text-xl lg:text-3xl"></i>
-              </div>
-            </div>
-
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-slate-400 text-sm">Available Players</p>
-                  <p class="text-3xl font-bold text-green-400" id="availablePlayers">-</p>
-                </div>
-                <i class="fas fa-check-circle text-green-500 text-3xl"></i>
-              </div>
-            </div>
-
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-slate-400 text-sm">Injured Players</p>
-                  <p class="text-3xl font-bold text-red-400" id="injuredPlayers">-</p>
-                </div>
-                <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
-              </div>
-            </div>
-
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-slate-400 text-sm">Team Fitness</p>
-                  <p class="text-3xl font-bold text-purple-400" id="teamFitness">-</p>
-                </div>
-                <i class="fas fa-heartbeat text-purple-500 text-3xl"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- Player Availability Status -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <h3 class="text-lg font-semibold mb-4">
-                <i class="fas fa-user-check mr-2"></i> Player Availability Status
-              </h3>
-              <div id="availabilityChart" class="space-y-3">
-                <p class="text-slate-400">Loading...</p>
-              </div>
-            </div>
-
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <h3 class="text-lg font-semibold mb-4">
-                <i class="fas fa-chart-line mr-2"></i> Performance Trends (30d)
-              </h3>
-              <div id="performanceTrends" class="space-y-3">
-                <p class="text-slate-400">Loading...</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Medical & Training Analytics -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <h3 class="text-lg font-semibold mb-4">
-                <i class="fas fa-hospital mr-2"></i> Medical Overview
-              </h3>
-              <div id="medicalOverview" class="space-y-2">
-                <p class="text-slate-400">Loading...</p>
-              </div>
-            </div>
-
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <h3 class="text-lg font-semibold mb-4">
-                <i class="fas fa-dumbbell mr-2"></i> Training Stats (30d)
-              </h3>
-              <div id="trainingStats" class="space-y-2">
-                <p class="text-slate-400">Loading...</p>
-              </div>
-            </div>
-
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <h3 class="text-lg font-semibold mb-4">
-                <i class="fas fa-calendar-alt mr-2"></i> Upcoming Events (30d)
-              </h3>
-              <div id="upcomingEvents" class="space-y-2">
-                <p class="text-slate-400">Loading...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Players Page -->
-        <div id="playersPage" class="page-content hidden">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h3 class="text-xl font-semibold">Team Players</h3>
-            <button id="addPlayerBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition w-full sm:w-auto">
-              <i class="fas fa-plus mr-2"></i> Add Player
-            </button>
-          </div>
-
-          <!-- Player Availability Filter -->
-          <div class="mb-4 flex flex-wrap gap-2">
-            <button class="availability-filter active bg-blue-600 text-white px-3 py-1 rounded text-sm" data-status="all">All</button>
-            <button class="availability-filter bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm" data-status="available">Available</button>
-            <button class="availability-filter bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm" data-status="injured">Injured</button>
-            <button class="availability-filter bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm" data-status="restricted">Restricted</button>
-          </div>
-
-          <div class="bg-slate-800 rounded-lg border border-slate-700">
-            <!-- Mobile Card View -->
-            <div class="lg:hidden space-y-3 p-4">
-              <div id="playersCardView">
-                <div class="text-center p-4 text-slate-400">Loading...</div>
-              </div>
-            </div>
-            
-            <!-- Desktop Table View -->
-            <div class="hidden lg:block overflow-x-auto">
-              <table class="w-full min-w-[640px]">
-                <thead class="bg-slate-700 border-b border-slate-600">
-                  <tr>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">#</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Name</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Position</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Status</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Fitness</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Games</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Points</th>
-                    <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="playersTableBody" class="divide-y divide-slate-700">
-                  <tr class="hover:bg-slate-700 transition">
-                    <td class="px-6 py-3 text-slate-400" colspan="8">Loading...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Training Page -->
-        <div id="trainingPage" class="page-content hidden">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-semibold">Training Sessions</h3>
-            <button id="addTrainingBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
-              <i class="fas fa-plus mr-2"></i> New Session
-            </button>
-          </div>
-
-          <div id="trainingList" class="space-y-4">
-            <p class="text-slate-400">Loading...</p>
-          </div>
-        </div>
-
-        <!-- Medical Page -->
-        <div id="medicalPage" class="page-content hidden">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-semibold">Medical Records</h3>
-            <button id="addMedicalBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
-              <i class="fas fa-plus mr-2"></i> New Record
-            </button>
-          </div>
-
-          <div id="medicalList" class="space-y-4">
-            <p class="text-slate-400">Loading...</p>
-          </div>
-        </div>
-
-        <!-- Schedule Page -->
-        <div id="schedulePage" class="page-content hidden">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-semibold">Calendar & Schedule</h3>
-            <button id="addEventBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">
-              <i class="fas fa-plus mr-2"></i> New Event
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div class="xl:col-span-2 bg-slate-800 rounded-lg border border-slate-700 p-4">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-                <h4 class="font-semibold">Calendar</h4>
-                <div class="flex gap-2">
-                  <button id="prevMonth" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm">
-                    <i class="fas fa-chevron-left"></i>
-                  </button>
-                  <span id="currentMonth" class="px-3 py-1 bg-slate-700 rounded text-sm font-medium"></span>
-                  <button id="nextMonth" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm">
-                    <i class="fas fa-chevron-right"></i>
-                  </button>
-                </div>
-              </div>
-              <div id="calendarView" class="grid grid-cols-7 gap-1">
-                <!-- Calendar will be generated here -->
-              </div>
-            </div>
-            <div class="bg-slate-800 rounded-lg border border-slate-700 p-4">
-              <h4 class="font-semibold mb-4">Upcoming Events</h4>
-              <div id="scheduleUpcomingList" class="space-y-3 max-h-64 overflow-y-auto">
-                <p class="text-slate-400">Loading...</p>
               </div>
               
-              <h4 class="font-semibold mb-4 mt-6">Previous Events</h4>
-              <div id="schedulePreviousList" class="space-y-3 max-h-64 overflow-y-auto">
-                <p class="text-slate-400">Loading...</p>
+              <!-- Desktop Table View -->
+              <div class="hidden lg:block overflow-x-auto">
+                <table class="w-full min-w-[640px]">
+                  <thead class="bg-slate-700 border-b border-slate-600">
+                    <tr>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">#</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Name</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Position</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Status</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Fitness</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Games</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Points</th>
+                      <th class="px-3 lg:px-6 py-3 text-left text-xs lg:text-sm font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="playersTableBody" class="divide-y divide-slate-700">
+                    <tr class="hover:bg-slate-700 transition">
+                      <td class="px-6 py-3 text-slate-400" colspan="8">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Teams Page -->
-        <div id="teamsPage" class="page-content hidden">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-semibold">Team Management</h3>
-            <button id="addTeamBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
-              <i class="fas fa-plus mr-2"></i> Add Team
-            </button>
-          </div>
+          <!-- Training Page -->
+          <div id="trainingPage" class="page-content hidden">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-semibold">Training Sessions</h3>
+              <button id="addTrainingBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
+                <i class="fas fa-plus mr-2"></i> New Session
+              </button>
+            </div>
 
-          <div id="teamsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <p class="text-slate-400">Loading teams...</p>
+            <div id="trainingList" class="space-y-4">
+              <p class="text-slate-400">Loading...</p>
             </div>
           </div>
+
+          <!-- Medical Page -->
+          <div id="medicalPage" class="page-content hidden">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-semibold">Medical Records</h3>
+              <button id="addMedicalBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+                <i class="fas fa-plus mr-2"></i> New Record
+              </button>
+            </div>
+
+            <div id="medicalList" class="space-y-4">
+              <p class="text-slate-400">Loading...</p>
+            </div>
+          </div>
+
+          <!-- Schedule Page -->
+          <div id="schedulePage" class="page-content hidden">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-semibold">Calendar & Schedule</h3>
+              <button id="addEventBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">
+                <i class="fas fa-plus mr-2"></i> New Event
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div class="xl:col-span-2 bg-slate-800 rounded-lg border border-slate-700 p-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                  <h4 class="font-semibold">Calendar</h4>
+                  <div class="flex gap-2">
+                    <button id="prevMonth" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm">
+                      <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="currentMonth" class="px-3 py-1 bg-slate-700 rounded text-sm font-medium"></span>
+                    <button id="nextMonth" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm">
+                      <i class="fas fa-chevron-right"></i>
+                    </button>
+                  </div>
+                </div>
+                <div id="calendarView" class="grid grid-cols-7 gap-1">
+                  <!-- Calendar will be generated here -->
+                </div>
+              </div>
+              <div class="bg-slate-800 rounded-lg border border-slate-700 p-4">
+                <h4 class="font-semibold mb-4">Upcoming Events</h4>
+                <div id="scheduleUpcomingList" class="space-y-3 max-h-64 overflow-y-auto">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+                
+                <h4 class="font-semibold mb-4 mt-6">Previous Events</h4>
+                <div id="schedulePreviousList" class="space-y-3 max-h-64 overflow-y-auto">
+                  <p class="text-slate-400">Loading...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teams Page -->
+          <div id="teamsPage" class="page-content hidden">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-semibold">Team Management</h3>
+              <button id="addTeamBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
+                <i class="fas fa-plus mr-2"></i> Add Team
+              </button>
+            </div>
+
+            <div id="teamsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <p class="text-slate-400">Loading teams...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading & Error States -->
+          <div id="loadingSpinner" class="hidden text-center py-12">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+            <p class="mt-4 text-slate-400">Loading...</p>
+          </div>
+
+          <div id="errorAlert" class="hidden bg-red-900 border border-red-700 rounded-lg p-4 text-red-200"></div>
         </div>
+      </main>
+    </div>
 
-        <!-- Loading & Error States -->
-        <div id="loadingSpinner" class="hidden text-center py-12">
-          <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-          <p class="mt-4 text-slate-400">Loading...</p>
-        </div>
+    <script type="module">
+      import { authManager } from '../js/auth.js';
+      import { getTeamPlayers, createPlayer } from '../js/players.js';
+      import { 
+        getTeamAvailabilityOverview,
+        getTeamPerformanceDashboard,
+        getMedicalAnalytics,
+        getTrainingAttendanceAnalytics,
+        checkPlayerWorkReadiness,
+        getTeamPerformanceTrends
+      } from '../js/analytics.js';
+      import { supabase } from '../js/supabaseClient.js';
 
-        <div id="errorAlert" class="hidden bg-red-900 border border-red-700 rounded-lg p-4 text-red-200"></div>
-      </div>
-    </main>
-  </div>
+      let currentUser = null;
+      let currentProfile = null;
+      let teamData = {
+        players: [],
+        availability: null,
+        dashboard: null,
+        medical: null
+      };
+      let realtimeSubscriptions = [];
 
-  <script type="module">
-    import { authManager } from '../js/auth.js';
-    import { getTeamPlayers, createPlayer } from '../js/players.js';
-    import { 
-      getTeamAvailabilityOverview,
-      getTeamPerformanceDashboard,
-      getMedicalAnalytics,
-      getTrainingAttendanceAnalytics,
-      checkPlayerWorkReadiness,
-      getTeamPerformanceTrends
-    } from '../js/analytics.js';
-    import { supabase } from '../js/supabaseClient.js';
+      // Initialize
+      async function init() {
+        const unsubscribe = authManager.subscribe(async (user, profile) => {
+          currentUser = user;
+          currentProfile = profile;
 
-    let currentUser = null;
-    let currentProfile = null;
-    let teamData = {
-      players: [],
-      availability: null,
-      dashboard: null,
-      medical: null
-    };
-    let realtimeSubscriptions = [];
+          if (!user) {
+            cleanupRealtimeSubscriptions();
+            window.location.href = './login.html';
+            return;
+          }
 
-    // Initialize
-    async function init() {
-      const unsubscribe = authManager.subscribe(async (user, profile) => {
-        currentUser = user;
-        currentProfile = profile;
+          updateUI();
+          await loadDashboardData();
+          setupRealtimeSubscriptions();
+        });
 
-        if (!user) {
-          cleanupRealtimeSubscriptions();
-          window.location.href = './login.html';
-          return;
+        // Check if already logged in
+        if (authManager.getUser()) {
+          currentUser = authManager.getUser();
+          currentProfile = authManager.getProfile();
+          updateUI();
+          await loadDashboardData();
+          setupRealtimeSubscriptions();
         }
 
-        updateUI();
-        await loadDashboardData();
-        setupRealtimeSubscriptions();
-      });
-
-      // Check if already logged in
-      if (authManager.getUser()) {
-        currentUser = authManager.getUser();
-        currentProfile = authManager.getProfile();
-        updateUI();
-        await loadDashboardData();
-        setupRealtimeSubscriptions();
+        authManager.init();
       }
 
-      authManager.init();
-    }
-
-    function updateUI() {
-      document.getElementById('userName').textContent = currentProfile?.full_name || 'User';
-      document.getElementById('userRole').textContent = (currentProfile?.role || 'user').toUpperCase();
-    }
-
-    async function loadDashboardData() {
-      try {
-        if (!currentProfile?.team_id) {
-          updateEmptyState();
-          return;
-        }
-
-        showLoading(true);
-
-        // Load all data in parallel
-        const [players, availability, dashboard, medical, trainingStats, performanceTrends] = await Promise.all([
-          getTeamPlayers(currentProfile.team_id),
-          getTeamAvailabilityOverview(currentProfile.team_id).catch(() => ({ summary: { total: 0, available: 0, injured: 0, restricted: 0 } })),
-          getTeamPerformanceDashboard(currentProfile.team_id).catch(() => ({ avg_team_fitness: 0 })),
-          getMedicalAnalytics(currentProfile.team_id).catch(() => ({ currently_injured: 0, avg_fitness_score: 0 })),
-          getTrainingAttendanceAnalytics(currentProfile.team_id, 30).catch(() => ({ avg_attendance_rate: 0, total_sessions: 0 })),
-          getTeamPerformanceTrends(currentProfile.team_id, 30).catch(() => ({ avg_fitness_trend: 'stable', attendance_trend: 'stable' }))
-        ]);
-
-        teamData = { players, availability, dashboard, medical };
-
-        // Update dashboard metrics
-        updateDashboardMetrics(availability, dashboard, medical, trainingStats);
-        updateAvailabilityChart(availability);
-        updatePerformanceTrends(performanceTrends);
-        updateMedicalOverview(medical);
-        updateTrainingStats(trainingStats);
-        updatePlayersTable(players, availability);
-        await updateUpcomingEventsOverview();
-
-        showLoading(false);
-      } catch (error) {
-        console.error('Error loading dashboard:', error);
-        showError('Failed to load dashboard data');
-        showLoading(false);
-      }
-    }
-
-    function updateDashboardMetrics(availability, dashboard, medical, trainingStats) {
-      document.getElementById('totalPlayers').textContent = availability?.summary?.total || 0;
-      document.getElementById('availablePlayers').textContent = availability?.summary?.available || 0;
-      document.getElementById('injuredPlayers').textContent = availability?.summary?.injured || 0;
-      document.getElementById('teamFitness').textContent = dashboard?.avg_team_fitness ? 
-        dashboard.avg_team_fitness.toFixed(1) : '0.0';
-    }
-
-    function updateAvailabilityChart(availability) {
-      const chartDiv = document.getElementById('availabilityChart');
-      console.log('Availability data:', availability); // Debug log
-      
-      if (!availability?.summary) {
-        chartDiv.innerHTML = '<p class="text-slate-400">No data available</p>';
-        return;
+      function updateUI() {
+        document.getElementById('userName').textContent = currentProfile?.full_name || 'User';
+        document.getElementById('userRole').textContent = (currentProfile?.role || 'user').toUpperCase();
       }
 
-      const { total, available, injured, restricted } = availability.summary;
-      console.log('Summary counts:', { total, available, injured, restricted }); // Debug log
-      
-      chartDiv.innerHTML = `
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-green-400">Available</span>
-            <span class="font-semibold">${available}/${total}</span>
-          </div>
-          <div class="w-full bg-slate-700 rounded-full h-2">
-            <div class="bg-green-500 h-2 rounded-full" style="width: ${total > 0 ? (available/total)*100 : 0}%"></div>
-          </div>
-          
-          <div class="flex justify-between items-center">
-            <span class="text-red-400">Injured</span>
-            <span class="font-semibold">${injured}/${total}</span>
-          </div>
-          <div class="w-full bg-slate-700 rounded-full h-2">
-            <div class="bg-red-500 h-2 rounded-full" style="width: ${total > 0 ? (injured/total)*100 : 0}%"></div>
-          </div>
-          
-          <div class="flex justify-between items-center">
-            <span class="text-yellow-400">Restricted</span>
-            <span class="font-semibold">${restricted}/${total}</span>
-          </div>
-          <div class="w-full bg-slate-700 rounded-full h-2">
-            <div class="bg-yellow-500 h-2 rounded-full" style="width: ${total > 0 ? (restricted/total)*100 : 0}%"></div>
-          </div>
-        </div>
-      `;
-    }
-
-    function updatePerformanceTrends(trends) {
-      const trendsDiv = document.getElementById('performanceTrends');
-      if (!trends) {
-        trendsDiv.innerHTML = '<p class="text-slate-400">No trend data</p>';
-        return;
-      }
-
-      const getTrendIcon = (trend) => {
-        if (trend === 'improving') return '<i class="fas fa-arrow-up text-green-400"></i>';
-        if (trend === 'declining') return '<i class="fas fa-arrow-down text-red-400"></i>';
-        return '<i class="fas fa-minus text-slate-400"></i>';
-      };
-
-      const getTrendColor = (trend) => {
-        if (trend === 'improving') return 'text-green-400';
-        if (trend === 'declining') return 'text-red-400';
-        return 'text-slate-400';
-      };
-
-      trendsDiv.innerHTML = `
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Fitness Trend:</span>
-            <div class="flex items-center gap-2">
-              ${getTrendIcon(trends.avg_fitness_trend)}
-              <span class="${getTrendColor(trends.avg_fitness_trend)} font-semibold capitalize">${trends.avg_fitness_trend}</span>
-            </div>
-          </div>
-          ${trends.fitness_change !== undefined ? `
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Fitness Change:</span>
-            <span class="${trends.fitness_change >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">
-              ${trends.fitness_change >= 0 ? '+' : ''}${trends.fitness_change.toFixed(1)}
-            </span>
-          </div>
-          ` : ''}
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Attendance Trend:</span>
-            <div class="flex items-center gap-2">
-              ${getTrendIcon(trends.attendance_trend)}
-              <span class="${getTrendColor(trends.attendance_trend)} font-semibold capitalize">${trends.attendance_trend}</span>
-            </div>
-          </div>
-          ${trends.attendance_change !== undefined ? `
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Attendance Change:</span>
-            <span class="${trends.attendance_change >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">
-              ${trends.attendance_change >= 0 ? '+' : ''}${trends.attendance_change.toFixed(1)}%
-            </span>
-          </div>
-          ` : ''}
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Injury Trend:</span>
-            <div class="flex items-center gap-2">
-              ${getTrendIcon(trends.injury_trend)}
-              <span class="${getTrendColor(trends.injury_trend)} font-semibold capitalize">${trends.injury_trend}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function updateMedicalOverview(medical) {
-      const overviewDiv = document.getElementById('medicalOverview');
-      if (!medical) {
-        overviewDiv.innerHTML = '<p class="text-slate-400">No medical data</p>';
-        return;
-      }
-
-      overviewDiv.innerHTML = `
-        <div class="space-y-2 text-sm">
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Total Records:</span>
-            <span class="text-blue-400 font-semibold">${medical.total_records || 0}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Currently Injured:</span>
-            <span class="text-red-400 font-semibold">${medical.currently_injured || 0}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Recent (30d):</span>
-            <span class="text-orange-400 font-semibold">${medical.recent_injuries || 0}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Avg Fitness:</span>
-            <span class="text-green-400 font-semibold">${medical.avg_fitness_score ? medical.avg_fitness_score.toFixed(1) : '0.0'}/10</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">High Risk:</span>
-            <span class="text-yellow-400 font-semibold">${medical.high_risk_players || 0}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Pending Follow-ups:</span>
-            <span class="text-purple-400 font-semibold">${medical.pending_followups || 0}</span>
-          </div>
-        </div>
-      `;
-    }
-
-    function updateTrainingStats(trainingStats) {
-      const statsDiv = document.getElementById('trainingStats');
-      if (!trainingStats) {
-        statsDiv.innerHTML = '<p class="text-slate-400">No training data</p>';
-        return;
-      }
-
-      const attendanceRate = trainingStats.avg_attendance_rate || 0;
-      const rateColor = attendanceRate >= 80 ? 'text-green-400' : attendanceRate >= 60 ? 'text-yellow-400' : 'text-red-400';
-
-      statsDiv.innerHTML = `
-        <div class="space-y-2 text-sm">
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Sessions (30d):</span>
-            <span class="text-blue-400 font-semibold">${trainingStats.total_sessions || 0}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Avg Attendance:</span>
-            <span class="${rateColor} font-semibold">${attendanceRate.toFixed(1)}%</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Total Present:</span>
-            <span class="text-green-400 font-semibold">${trainingStats.total_present || 0}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400">Total Absent:</span>
-            <span class="text-red-400 font-semibold">${trainingStats.total_absent || 0}</span>
-          </div>
-        </div>
-      `;
-    }
-
-    async function updatePlayersTable(players, availability) {
-      const tbody = document.getElementById('playersTableBody');
-      const cardView = document.getElementById('playersCardView');
-      
-      if (!players || players.length === 0) {
-        if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-3 text-slate-400 text-center">No players found</td></tr>';
-        if (cardView) cardView.innerHTML = '<div class="text-center p-4 text-slate-400">No players found</div>';
-        return;
-      }
-
-      const playerRows = await Promise.all(players.map(async (player) => {
-        let workReadiness = null;
+      async function loadDashboardData() {
         try {
-          workReadiness = await checkPlayerWorkReadiness(player.id);
+          if (!currentProfile?.team_id) {
+            updateEmptyState();
+            return;
+          }
+
+          showLoading(true);
+
+          // Load all data in parallel
+          const [players, availability, dashboard, medical, trainingStats, performanceTrends] = await Promise.all([
+            getTeamPlayers(currentProfile.team_id),
+            getTeamAvailabilityOverview(currentProfile.team_id).catch(() => ({ summary: { total: 0, available: 0, injured: 0, restricted: 0 } })),
+            getTeamPerformanceDashboard(currentProfile.team_id).catch(() => ({ avg_team_fitness: 0 })),
+            getMedicalAnalytics(currentProfile.team_id).catch(() => ({ currently_injured: 0, avg_fitness_score: 0 })),
+            getTrainingAttendanceAnalytics(currentProfile.team_id, 30).catch(() => ({ avg_attendance_rate: 0, total_sessions: 0 })),
+            getTeamPerformanceTrends(currentProfile.team_id, 30).catch(() => ({ avg_fitness_trend: 'stable', attendance_trend: 'stable' }))
+          ]);
+
+          teamData = { players, availability, dashboard, medical };
+
+          // Update dashboard metrics
+          updateDashboardMetrics(availability, dashboard, medical, trainingStats);
+          updateAvailabilityChart(availability);
+          updatePerformanceTrends(performanceTrends);
+          updateMedicalOverview(medical);
+          updateTrainingStats(trainingStats);
+          updatePlayersTable(players, availability);
+          await updateUpcomingEventsOverview();
+
+          showLoading(false);
         } catch (error) {
-          console.warn('Could not get work readiness for player:', player.id);
+          console.error('Error loading dashboard:', error);
+          showError('Failed to load dashboard data');
+          showLoading(false);
+        }
+      }
+
+      function updateDashboardMetrics(availability, dashboard, medical, trainingStats) {
+        document.getElementById('totalPlayers').textContent = availability?.summary?.total || 0;
+        document.getElementById('availablePlayers').textContent = availability?.summary?.available || 0;
+        document.getElementById('injuredPlayers').textContent = availability?.summary?.injured || 0;
+        document.getElementById('teamFitness').textContent = dashboard?.avg_team_fitness ? 
+          dashboard.avg_team_fitness.toFixed(1) : '0.0';
+      }
+
+      function updateAvailabilityChart(availability) {
+        const chartDiv = document.getElementById('availabilityChart');
+        console.log('Availability data:', availability); // Debug log
+        
+        if (!availability?.summary) {
+          chartDiv.innerHTML = '<p class="text-slate-400">No data available</p>';
+          return;
         }
 
-        const statusBadge = getStatusBadge(workReadiness?.status || 'Status Unknown');
-        const fitnessScore = workReadiness?.fitnessScore || 0;
+        const { total, available, injured, restricted } = availability.summary;
+        console.log('Summary counts:', { total, available, injured, restricted }); // Debug log
         
-        // Desktop table row
-        const tableRow = `
-          <tr class="hover:bg-slate-700 transition">
-            <td class="px-6 py-3 font-semibold text-blue-400">#${player.jersey_number}</td>
-            <td class="px-6 py-3">${player.first_name} ${player.last_name}</td>
-            <td class="px-6 py-3 text-slate-400">${player.position}</td>
-            <td class="px-6 py-3">${statusBadge}</td>
-            <td class="px-6 py-3">
-              <div class="flex items-center gap-2">
-                <span class="text-sm">${fitnessScore.toFixed(1)}/10</span>
-                <div class="w-16 bg-slate-700 rounded-full h-2">
-                  <div class="bg-blue-500 h-2 rounded-full" style="width: ${(fitnessScore/10)*100}%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-3 text-slate-400">${player.player_stats?.[0]?.games_played || 0}</td>
-            <td class="px-6 py-3 text-slate-400">${player.player_stats?.[0]?.points_scored || 0}</td>
-            <td class="px-6 py-3">
-              <button class="text-blue-400 hover:text-blue-300 mr-2" onclick="viewPlayer('${player.id}')">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="text-green-400 hover:text-green-300 mr-2" onclick="editPlayer('${player.id}')">
-                <i class="fas fa-edit"></i>
-              </button>
-            </td>
-          </tr>
+        chartDiv.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-green-400">Available</span>
+              <span class="font-semibold">${available}/${total}</span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-2">
+              <div class="bg-green-500 h-2 rounded-full" style="width: ${total > 0 ? (available/total)*100 : 0}%"></div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+              <span class="text-red-400">Injured</span>
+              <span class="font-semibold">${injured}/${total}</span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" style="width: ${total > 0 ? (injured/total)*100 : 0}%"></div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+              <span class="text-yellow-400">Restricted</span>
+              <span class="font-semibold">${restricted}/${total}</span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-2">
+              <div class="bg-yellow-500 h-2 rounded-full" style="width: ${total > 0 ? (restricted/total)*100 : 0}%"></div>
+            </div>
+          </div>
         `;
-        
-        // Mobile card
-        const mobileCard = `
-          <div class="bg-slate-700 p-4 rounded-lg">
-            <div class="flex justify-between items-start mb-3">
-              <div class="flex items-center gap-3">
-                <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm font-bold">#${player.jersey_number}</span>
-                <div>
-                  <h4 class="font-semibold">${player.first_name} ${player.last_name}</h4>
-                  <p class="text-slate-400 text-sm">${player.position}</p>
-                </div>
-              </div>
-              <div class="flex gap-2">
-                <button class="text-blue-400 hover:text-blue-300" onclick="viewPlayer('${player.id}')">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button class="text-green-400 hover:text-green-300" onclick="editPlayer('${player.id}')">
-                  <i class="fas fa-edit"></i>
-                </button>
+      }
+
+      function updatePerformanceTrends(trends) {
+        const trendsDiv = document.getElementById('performanceTrends');
+        if (!trends) {
+          trendsDiv.innerHTML = '<p class="text-slate-400">No trend data</p>';
+          return;
+        }
+
+        const getTrendIcon = (trend) => {
+          if (trend === 'improving') return '<i class="fas fa-arrow-up text-green-400"></i>';
+          if (trend === 'declining') return '<i class="fas fa-arrow-down text-red-400"></i>';
+          return '<i class="fas fa-minus text-slate-400"></i>';
+        };
+
+        const getTrendColor = (trend) => {
+          if (trend === 'improving') return 'text-green-400';
+          if (trend === 'declining') return 'text-red-400';
+          return 'text-slate-400';
+        };
+
+        trendsDiv.innerHTML = `
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Fitness Trend:</span>
+              <div class="flex items-center gap-2">
+                ${getTrendIcon(trends.avg_fitness_trend)}
+                <span class="${getTrendColor(trends.avg_fitness_trend)} font-semibold capitalize">${trends.avg_fitness_trend}</span>
               </div>
             </div>
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span class="text-slate-400">Status:</span>
-                <div class="mt-1">${statusBadge}</div>
+            ${trends.fitness_change !== undefined ? `
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Fitness Change:</span>
+              <span class="${trends.fitness_change >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">
+                ${trends.fitness_change >= 0 ? '+' : ''}${trends.fitness_change.toFixed(1)}
+              </span>
+            </div>
+            ` : ''}
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Attendance Trend:</span>
+              <div class="flex items-center gap-2">
+                ${getTrendIcon(trends.attendance_trend)}
+                <span class="${getTrendColor(trends.attendance_trend)} font-semibold capitalize">${trends.attendance_trend}</span>
               </div>
-              <div>
-                <span class="text-slate-400">Fitness:</span>
-                <div class="flex items-center gap-2 mt-1">
-                  <span>${fitnessScore.toFixed(1)}/10</span>
-                  <div class="w-12 bg-slate-600 rounded-full h-2">
+            </div>
+            ${trends.attendance_change !== undefined ? `
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Attendance Change:</span>
+              <span class="${trends.attendance_change >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold">
+                ${trends.attendance_change >= 0 ? '+' : ''}${trends.attendance_change.toFixed(1)}%
+              </span>
+            </div>
+            ` : ''}
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Injury Trend:</span>
+              <div class="flex items-center gap-2">
+                ${getTrendIcon(trends.injury_trend)}
+                <span class="${getTrendColor(trends.injury_trend)} font-semibold capitalize">${trends.injury_trend}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function updateMedicalOverview(medical) {
+        const overviewDiv = document.getElementById('medicalOverview');
+        if (!medical) {
+          overviewDiv.innerHTML = '<p class="text-slate-400">No medical data</p>';
+          return;
+        }
+
+        overviewDiv.innerHTML = `
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Total Records:</span>
+              <span class="text-blue-400 font-semibold">${medical.total_records || 0}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Currently Injured:</span>
+              <span class="text-red-400 font-semibold">${medical.currently_injured || 0}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Recent (30d):</span>
+              <span class="text-orange-400 font-semibold">${medical.recent_injuries || 0}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Avg Fitness:</span>
+              <span class="text-green-400 font-semibold">${medical.avg_fitness_score ? medical.avg_fitness_score.toFixed(1) : '0.0'}/10</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">High Risk:</span>
+              <span class="text-yellow-400 font-semibold">${medical.high_risk_players || 0}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Pending Follow-ups:</span>
+              <span class="text-purple-400 font-semibold">${medical.pending_followups || 0}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      function updateTrainingStats(trainingStats) {
+        const statsDiv = document.getElementById('trainingStats');
+        if (!trainingStats) {
+          statsDiv.innerHTML = '<p class="text-slate-400">No training data</p>';
+          return;
+        }
+
+        const attendanceRate = trainingStats.avg_attendance_rate || 0;
+        const rateColor = attendanceRate >= 80 ? 'text-green-400' : attendanceRate >= 60 ? 'text-yellow-400' : 'text-red-400';
+
+        statsDiv.innerHTML = `
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Sessions (30d):</span>
+              <span class="text-blue-400 font-semibold">${trainingStats.total_sessions || 0}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Avg Attendance:</span>
+              <span class="${rateColor} font-semibold">${attendanceRate.toFixed(1)}%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Total Present:</span>
+              <span class="text-green-400 font-semibold">${trainingStats.total_present || 0}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Total Absent:</span>
+              <span class="text-red-400 font-semibold">${trainingStats.total_absent || 0}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      async function updatePlayersTable(players, availability) {
+        const tbody = document.getElementById('playersTableBody');
+        const cardView = document.getElementById('playersCardView');
+        
+        if (!players || players.length === 0) {
+          if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-3 text-slate-400 text-center">No players found</td></tr>';
+          if (cardView) cardView.innerHTML = '<div class="text-center p-4 text-slate-400">No players found</div>';
+          return;
+        }
+
+        const playerRows = await Promise.all(players.map(async (player) => {
+          let workReadiness = null;
+          try {
+            workReadiness = await checkPlayerWorkReadiness(player.id);
+          } catch (error) {
+            console.warn('Could not get work readiness for player:', player.id);
+          }
+
+          const statusBadge = getStatusBadge(workReadiness?.status || 'Status Unknown');
+          const fitnessScore = workReadiness?.fitnessScore || 0;
+          
+          // Desktop table row
+          const tableRow = `
+            <tr class="hover:bg-slate-700 transition">
+              <td class="px-6 py-3 font-semibold text-blue-400">#${player.jersey_number}</td>
+              <td class="px-6 py-3">${player.first_name} ${player.last_name}</td>
+              <td class="px-6 py-3 text-slate-400">${player.position}</td>
+              <td class="px-6 py-3">${statusBadge}</td>
+              <td class="px-6 py-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm">${fitnessScore.toFixed(1)}/10</span>
+                  <div class="w-16 bg-slate-700 rounded-full h-2">
                     <div class="bg-blue-500 h-2 rounded-full" style="width: ${(fitnessScore/10)*100}%"></div>
                   </div>
                 </div>
+              </td>
+              <td class="px-6 py-3 text-slate-400">${player.player_stats?.[0]?.games_played || 0}</td>
+              <td class="px-6 py-3 text-slate-400">${player.player_stats?.[0]?.points_scored || 0}</td>
+              <td class="px-6 py-3">
+                <button class="text-blue-400 hover:text-blue-300 mr-2" onclick="viewPlayer('${player.id}')">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="text-green-400 hover:text-green-300 mr-2" onclick="editPlayer('${player.id}')">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+          
+          // Mobile card
+          const mobileCard = `
+            <div class="bg-slate-700 p-4 rounded-lg">
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex items-center gap-3">
+                  <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm font-bold">#${player.jersey_number}</span>
+                  <div>
+                    <h4 class="font-semibold">${player.first_name} ${player.last_name}</h4>
+                    <p class="text-slate-400 text-sm">${player.position}</p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="text-blue-400 hover:text-blue-300" onclick="viewPlayer('${player.id}')">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="text-green-400 hover:text-green-300" onclick="editPlayer('${player.id}')">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
               </div>
-              <div>
-                <span class="text-slate-400">Games:</span>
-                <span class="ml-2">${player.player_stats?.[0]?.games_played || 0}</span>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span class="text-slate-400">Status:</span>
+                  <div class="mt-1">${statusBadge}</div>
+                </div>
+                <div>
+                  <span class="text-slate-400">Fitness:</span>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span>${fitnessScore.toFixed(1)}/10</span>
+                    <div class="w-12 bg-slate-600 rounded-full h-2">
+                      <div class="bg-blue-500 h-2 rounded-full" style="width: ${(fitnessScore/10)*100}%"></div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-slate-400">Games:</span>
+                  <span class="ml-2">${player.player_stats?.[0]?.games_played || 0}</span>
+                </div>
+                <div>
+                  <span class="text-slate-400">Points:</span>
+                  <span class="ml-2">${player.player_stats?.[0]?.points_scored || 0}</span>
+                </div>
               </div>
-              <div>
-                <span class="text-slate-400">Points:</span>
-                <span class="ml-2">${player.player_stats?.[0]?.points_scored || 0}</span>
+            </div>
+          `;
+          
+          return { tableRow, mobileCard };
+        }));
+
+        // Update desktop table
+        if (tbody) {
+          tbody.innerHTML = playerRows.map(p => p.tableRow).join('');
+        }
+        
+        // Update mobile cards
+        if (cardView) {
+          cardView.innerHTML = playerRows.map(p => p.mobileCard).join('');
+        }
+      }
+
+      function getStatusBadge(status) {
+        const badges = {
+          'Ready to Play': '<span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">Ready</span>',
+          'Not Available': '<span class="px-2 py-1 bg-red-900 text-red-300 rounded-full text-xs">Injured</span>',
+          'Limited Availability': '<span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs">Restricted</span>',
+          'Status Unknown': '<span class="px-2 py-1 bg-slate-700 text-slate-400 rounded-full text-xs">Unknown</span>'
+        };
+        return badges[status] || badges['Status Unknown'];
+      }
+
+      function updateEmptyState() {
+        document.getElementById('totalPlayers').textContent = '0';
+        document.getElementById('availablePlayers').textContent = '0';
+        document.getElementById('injuredPlayers').textContent = '0';
+        document.getElementById('teamFitness').textContent = '0.0';
+      }
+
+      function showLoading(show) {
+        const spinner = document.getElementById('loadingSpinner');
+        if (show) {
+          spinner.classList.remove('hidden');
+        } else {
+          spinner.classList.add('hidden');
+        }
+      }
+
+      function showError(message) {
+        const errorDiv = document.getElementById('errorAlert');
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+      }
+
+      // Navigation
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          document.querySelectorAll('.nav-link').forEach(l => {
+            l.classList.remove('active', 'bg-blue-600', 'text-white');
+            l.classList.add('hover:bg-slate-700');
+          });
+
+          link.classList.add('active', 'bg-blue-600', 'text-white');
+          link.classList.remove('hover:bg-slate-700');
+
+          const page = link.dataset.page;
+          showPage(page);
+        });
+      });
+
+      // Availability filter
+      document.querySelectorAll('.availability-filter').forEach(filter => {
+        filter.addEventListener('click', () => {
+          document.querySelectorAll('.availability-filter').forEach(f => {
+            f.classList.remove('active', 'bg-blue-600', 'text-white');
+            f.classList.add('bg-slate-700');
+          });
+          filter.classList.add('active', 'bg-blue-600', 'text-white');
+          filter.classList.remove('bg-slate-700');
+          
+          // Filter players table based on status
+          filterPlayersTable(filter.dataset.status);
+        });
+      });
+
+      function filterPlayersTable(status) {
+        // Filter desktop table rows
+        const rows = document.querySelectorAll('#playersTableBody tr');
+        rows.forEach(row => {
+          if (status === 'all') {
+            row.style.display = '';
+          } else {
+            const statusCell = row.querySelector('td:nth-child(4)');
+            if (statusCell) {
+              const shouldShow = (
+                (status === 'available' && statusCell.textContent.includes('Ready')) ||
+                (status === 'injured' && statusCell.textContent.includes('Injured')) ||
+                (status === 'restricted' && statusCell.textContent.includes('Restricted'))
+              );
+              row.style.display = shouldShow ? '' : 'none';
+            }
+          }
+        });
+        
+        // Filter mobile cards
+        const cards = document.querySelectorAll('#playersCardView > div');
+        cards.forEach(card => {
+          if (status === 'all') {
+            card.style.display = '';
+          } else {
+            const statusDiv = card.querySelector('div:nth-child(2) > div:first-child > div:nth-child(2)');
+            if (statusDiv) {
+              const shouldShow = (
+                (status === 'available' && statusDiv.textContent.includes('Ready')) ||
+                (status === 'injured' && statusDiv.textContent.includes('Injured')) ||
+                (status === 'restricted' && statusDiv.textContent.includes('Restricted'))
+              );
+              card.style.display = shouldShow ? '' : 'none';
+            }
+          }
+        });
+      }
+
+      async function updateUpcomingEventsOverview() {
+        try {
+          if (!currentProfile?.team_id) {
+            document.getElementById('upcomingEvents').innerHTML = '<p class="text-slate-400">No team assigned</p>';
+            return;
+          }
+
+          const today = new Date();
+          const oneMonthLater = new Date();
+          oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+
+          const { data: events, error } = await supabase
+            .from('events')
+            .select('*')
+            .eq('team_id', currentProfile.team_id)
+            .gte('event_date', today.toISOString().split('T')[0])
+            .lte('event_date', oneMonthLater.toISOString().split('T')[0])
+            .order('event_date', { ascending: true })
+            .limit(5);
+
+          const upcomingDiv = document.getElementById('upcomingEvents');
+          
+          if (error || !events || events.length === 0) {
+            upcomingDiv.innerHTML = '<p class="text-slate-400 text-sm">No upcoming events</p>';
+            return;
+          }
+
+          const typeColors = {
+            'training': 'bg-green-900 text-green-300',
+            'game': 'bg-red-900 text-red-300',
+            'match': 'bg-red-900 text-red-300',
+            'meeting': 'bg-blue-900 text-blue-300',
+            'tournament': 'bg-purple-900 text-purple-300',
+            'medical_checkup': 'bg-orange-900 text-orange-300'
+          };
+
+          upcomingDiv.innerHTML = events.map(event => {
+            const eventDate = new Date(event.event_date);
+            const daysUntil = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
+            return `
+              <div class="bg-slate-700 p-3 rounded hover:bg-slate-600 transition cursor-pointer" onclick="viewEventDetails('${event.id}')">
+                <div class="flex justify-between items-start mb-1">
+                  <h5 class="font-medium text-sm">${event.event_title}</h5>
+                  <span class="px-2 py-1 rounded text-xs ${typeColors[event.event_type] || 'bg-slate-600 text-slate-300'}">
+                    ${event.event_type}
+                  </span>
+                </div>
+                <p class="text-slate-400 text-xs">${eventDate.toLocaleDateString()}${event.event_time ? ' at ' + event.event_time : ''}</p>
+                <p class="text-slate-500 text-xs mt-1">${daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}</p>
               </div>
+            `;
+          }).join('');
+        } catch (error) {
+          console.error('Error loading upcoming events:', error);
+          document.getElementById('upcomingEvents').innerHTML = '<p class="text-slate-400 text-sm">Error loading events</p>';
+        }
+      }
+
+      function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+        
+        // Handle special pages that redirect to separate files
+        if (page === 'medical') {
+          window.location.href = './medical.html';
+          return;
+        }
+        if (page === 'training') {
+          window.location.href = './training.html';
+          return;
+        }
+        
+        const pageElement = document.getElementById(page + 'Page');
+        if (pageElement) {
+          pageElement.classList.remove('hidden');
+          updatePageTitle(page);
+        }
+      }
+
+      function updatePageTitle(page) {
+        const titles = {
+          overview: 'Dashboard',
+          players: 'Team Players',
+          training: 'Training Sessions',
+          medical: 'Medical Records',
+          schedule: 'Schedule & Events',
+          teams: 'Team Management'
+        };
+        document.getElementById('pageTitle').textContent = titles[page] || 'Sports Hub';
+      }
+
+      // Global functions for button clicks
+      window.viewPlayer = async (playerId) => {
+        try {
+          const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?id=eq.${playerId}&select=*`, {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
+            }
+          });
+          const player = (await response.json())[0];
+          showPlayerViewModal(player);
+        } catch (error) {
+          showError('Error loading player: ' + error.message);
+        }
+      };
+
+      window.editPlayer = async (playerId) => {
+        try {
+          const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?id=eq.${playerId}&select=*`, {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
+            }
+          });
+          const player = (await response.json())[0];
+          showPlayerEditModal(player);
+        } catch (error) {
+          showError('Error loading player: ' + error.message);
+        }
+      };
+
+      function showPlayerViewModal(player) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-slate-800 p-6 rounded-lg w-96">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Player Profile</h3>
+              <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="space-y-3">
+              <div><span class="text-slate-400">Name:</span> ${player.first_name} ${player.last_name}</div>
+              <div><span class="text-slate-400">Jersey:</span> #${player.jersey_number}</div>
+              <div><span class="text-slate-400">Position:</span> ${player.position}</div>
+              <div><span class="text-slate-400">Age:</span> ${player.age}</div>
+              ${player.height_cm ? `<div><span class="text-slate-400">Height:</span> ${player.height_cm} cm</div>` : ''}
+              ${player.weight_kg ? `<div><span class="text-slate-400">Weight:</span> ${player.weight_kg} kg</div>` : ''}
+            </div>
+            <div class="mt-6 text-center">
+              <button onclick="this.closest('.fixed').remove()" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded">
+                Close
+              </button>
             </div>
           </div>
         `;
+        document.body.appendChild(modal);
+      }
+
+      function showPlayerEditModal(player) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-slate-800 p-6 rounded-lg w-96">
+            <h3 class="text-xl font-bold mb-4">Edit Player</h3>
+            <form id="editPlayerForm">
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">First Name</label>
+                <input type="text" name="first_name" value="${player.first_name}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Last Name</label>
+                <input type="text" name="last_name" value="${player.last_name}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Age</label>
+                <input type="number" name="age" value="${player.age}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Position</label>
+                <select name="position" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+                  <option value="Goalkeeper" ${player.position === 'Goalkeeper' ? 'selected' : ''}>Goalkeeper</option>
+                  <option value="Defender" ${player.position === 'Defender' ? 'selected' : ''}>Defender</option>
+                  <option value="Midfielder" ${player.position === 'Midfielder' ? 'selected' : ''}>Midfielder</option>
+                  <option value="Forward" ${player.position === 'Forward' ? 'selected' : ''}>Forward</option>
+                  <option value="Striker" ${player.position === 'Striker' ? 'selected' : ''}>Striker</option>
+                  <option value="Winger" ${player.position === 'Winger' ? 'selected' : ''}>Winger</option>
+                  <option value="Center Back" ${player.position === 'Center Back' ? 'selected' : ''}>Center Back</option>
+                  <option value="Full Back" ${player.position === 'Full Back' ? 'selected' : ''}>Full Back</option>
+                  <option value="Defensive Midfielder" ${player.position === 'Defensive Midfielder' ? 'selected' : ''}>Defensive Midfielder</option>
+                  <option value="Attacking Midfielder" ${player.position === 'Attacking Midfielder' ? 'selected' : ''}>Attacking Midfielder</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Jersey Number</label>
+                <input type="number" name="jersey_number" value="${player.jersey_number}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 py-2 rounded text-white">Update</button>
+                <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
+              </div>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(modal);
         
-        return { tableRow, mobileCard };
-      }));
-
-      // Update desktop table
-      if (tbody) {
-        tbody.innerHTML = playerRows.map(p => p.tableRow).join('');
+        modal.querySelector('#editPlayerForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const playerData = Object.fromEntries(formData);
+          
+          try {
+            const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?id=eq.${player.id}`, {
+              method: 'PATCH',
+              headers: {
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(playerData)
+            });
+            
+            if (response.ok) {
+              modal.remove();
+              await loadDashboardData();
+              showSuccess('Player updated successfully!');
+            } else {
+              showError('Failed to update player');
+            }
+          } catch (error) {
+            showError('Error updating player: ' + error.message);
+          }
+        });
       }
-      
-      // Update mobile cards
-      if (cardView) {
-        cardView.innerHTML = playerRows.map(p => p.mobileCard).join('');
-      }
-    }
 
-    function getStatusBadge(status) {
-      const badges = {
-        'Ready to Play': '<span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">Ready</span>',
-        'Not Available': '<span class="px-2 py-1 bg-red-900 text-red-300 rounded-full text-xs">Injured</span>',
-        'Limited Availability': '<span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs">Restricted</span>',
-        'Status Unknown': '<span class="px-2 py-1 bg-slate-700 text-slate-400 rounded-full text-xs">Unknown</span>'
+      // Add Player button handler
+      document.getElementById('addPlayerBtn').addEventListener('click', () => {
+        showAddPlayerModal();
+      });
+
+      // Add Training button handler
+      document.getElementById('addTrainingBtn').addEventListener('click', () => {
+        showAddTrainingModal();
+      });
+
+      // Add Medical button handler
+      document.getElementById('addMedicalBtn').addEventListener('click', () => {
+        showAddMedicalModal();
+      });
+
+      // Add Team button handler
+      document.getElementById('addTeamBtn').addEventListener('click', () => {
+        showAddTeamModal();
+      });
+
+      function showAddTeamModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-slate-800 p-6 rounded-lg w-96">
+            <h3 class="text-xl font-bold mb-4">Create New Team</h3>
+            <form id="addTeamForm">
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Team Name</label>
+                <input type="text" name="name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Sport</label>
+                <input type="text" name="sport" value="Soccer" readonly class="w-full px-3 py-2 bg-slate-600 border border-slate-600 rounded text-slate-400">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Season</label>
+                <input type="text" name="season" value="2024" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 py-2 rounded text-white">Create</button>
+                <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
+              </div>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.querySelector('#addTeamForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const teamData = Object.fromEntries(formData);
+          
+          try {
+            const response = await fetch('https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams', {
+              method: 'POST',
+              headers: {
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                name: teamData.name,
+                sport: 'Soccer',
+                season: teamData.season,
+                active: true
+              })
+            });
+            
+            if (response.ok) {
+              modal.remove();
+              loadTeams();
+              showSuccess('Team created successfully!');
+            } else {
+              showError('Failed to create team');
+            }
+          } catch (error) {
+            showError('Error: ' + error.message);
+          }
+        });
+      }
+
+      async function loadTeams() {
+        try {
+          const response = await fetch('https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams?select=*', {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
+            }
+          });
+          
+          const teams = await response.json();
+          const grid = document.getElementById('teamsGrid');
+          
+          if (teams.length === 0) {
+            grid.innerHTML = '<div class="col-span-full bg-slate-800 p-6 rounded-lg text-center text-slate-400">No teams found. Create your first team!</div>';
+          } else {
+            grid.innerHTML = teams.map(team => `
+              <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <div class="flex justify-between items-start mb-4">
+                  <h4 class="text-xl font-bold">${team.name}</h4>
+                  <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded text-sm">${team.sport}</span>
+                </div>
+                <p class="text-slate-400 mb-4">Season: ${team.season}</p>
+                <div class="flex gap-2">
+                  <button onclick="viewTeamDetails('${team.id}', '${team.name}')" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">
+                    View Details
+                  </button>
+                  <button onclick="deleteTeam('${team.id}')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            `).join('');
+          }
+        } catch (error) {
+          document.getElementById('teamsGrid').innerHTML = `<div class="text-red-400">Error: ${error.message}</div>`;
+        }
+      }
+
+      window.viewTeamDetails = async (teamId, teamName) => {
+        try {
+          // Fetch players
+          const playersResponse = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?team_id=eq.${teamId}&select=*`, {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
+            }
+          });
+          const players = await playersResponse.json();
+
+          // Fetch coach
+          const coachResponse = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams?id=eq.${teamId}&select=*,users!coach_id(full_name)`, {
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
+            }
+          });
+          const teamData = await coachResponse.json();
+          console.log('Team data:', teamData); // Debug log
+          const coach = teamData[0]?.users?.full_name || 'No coach assigned';
+
+          showTeamDetailsModal(teamName, players, coach);
+        } catch (error) {
+          showError('Error loading team details: ' + error.message);
+        }
       };
-      return badges[status] || badges['Status Unknown'];
-    }
 
-    function updateEmptyState() {
-      document.getElementById('totalPlayers').textContent = '0';
-      document.getElementById('availablePlayers').textContent = '0';
-      document.getElementById('injuredPlayers').textContent = '0';
-      document.getElementById('teamFitness').textContent = '0.0';
-    }
+      function showTeamDetailsModal(teamName, players, coach) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-slate-800 p-6 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">${teamName} - Team Details</h3>
+              <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div class="mb-6">
+              <h4 class="text-lg font-semibold mb-2 text-blue-400">Coach</h4>
+              <div class="bg-slate-700 p-3 rounded">
+                <p class="text-slate-200">${coach}</p>
+              </div>
+            </div>
 
-    function showLoading(show) {
-      const spinner = document.getElementById('loadingSpinner');
-      if (show) {
-        spinner.classList.remove('hidden');
-      } else {
-        spinner.classList.add('hidden');
+            <div>
+              <h4 class="text-lg font-semibold mb-2 text-green-400">Players (${players.length})</h4>
+              ${players.length === 0 ? 
+                '<div class="bg-slate-700 p-3 rounded text-slate-400">No players assigned to this team</div>' :
+                `<div class="grid gap-2">
+                  ${players.map(player => `
+                    <div class="bg-slate-700 p-3 rounded flex justify-between items-center">
+                      <div>
+                        <span class="font-medium text-slate-200">${player.first_name} ${player.last_name}</span>
+                        <span class="text-slate-400 ml-2">#${player.jersey_number}</span>
+                      </div>
+                      <span class="text-slate-400 text-sm">${player.position}</span>
+                    </div>
+                  `).join('')}
+                </div>`
+              }
+            </div>
+            
+            <div class="mt-6 text-center">
+              <button onclick="this.closest('.fixed').remove()" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
       }
-    }
 
-    function showError(message) {
-      const errorDiv = document.getElementById('errorAlert');
-      errorDiv.textContent = message;
-      errorDiv.classList.remove('hidden');
-      setTimeout(() => errorDiv.classList.add('hidden'), 5000);
-    }
-
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
+      window.deleteTeam = async (teamId) => {
+        if (!confirm('Delete this team?')) return;
         
-        document.querySelectorAll('.nav-link').forEach(l => {
-          l.classList.remove('active', 'bg-blue-600', 'text-white');
-          l.classList.add('hover:bg-slate-700');
-        });
-
-        link.classList.add('active', 'bg-blue-600', 'text-white');
-        link.classList.remove('hover:bg-slate-700');
-
-        const page = link.dataset.page;
-        showPage(page);
-      });
-    });
-
-    // Availability filter
-    document.querySelectorAll('.availability-filter').forEach(filter => {
-      filter.addEventListener('click', () => {
-        document.querySelectorAll('.availability-filter').forEach(f => {
-          f.classList.remove('active', 'bg-blue-600', 'text-white');
-          f.classList.add('bg-slate-700');
-        });
-        filter.classList.add('active', 'bg-blue-600', 'text-white');
-        filter.classList.remove('bg-slate-700');
-        
-        // Filter players table based on status
-        filterPlayersTable(filter.dataset.status);
-      });
-    });
-
-    function filterPlayersTable(status) {
-      // Filter desktop table rows
-      const rows = document.querySelectorAll('#playersTableBody tr');
-      rows.forEach(row => {
-        if (status === 'all') {
-          row.style.display = '';
-        } else {
-          const statusCell = row.querySelector('td:nth-child(4)');
-          if (statusCell) {
-            const shouldShow = (
-              (status === 'available' && statusCell.textContent.includes('Ready')) ||
-              (status === 'injured' && statusCell.textContent.includes('Injured')) ||
-              (status === 'restricted' && statusCell.textContent.includes('Restricted'))
-            );
-            row.style.display = shouldShow ? '' : 'none';
+        try {
+          const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams?id=eq.${teamId}`, {
+            method: 'DELETE',
+            headers: {
+              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
+            }
+          });
+          
+          if (response.ok) {
+            loadTeams();
+            showSuccess('Team deleted successfully!');
           }
+        } catch (error) {
+          showError('Error: ' + error.message);
+        }
+      };
+
+      // Load teams when teams page is shown
+      document.querySelector('[data-page="teams"]').addEventListener('click', () => {
+        setTimeout(loadTeams, 100);
+      });
+
+      function showAddPlayerModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-slate-800 p-6 rounded-lg w-96 max-w-full">
+            <h3 class="text-xl font-bold mb-4">Add New Player</h3>
+            <form id="addPlayerForm">
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">First Name</label>
+                <input type="text" name="first_name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Last Name</label>
+                <input type="text" name="last_name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Age</label>
+                <input type="number" name="age" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Position</label>
+                <select name="position" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+                  <option value="Goalkeeper">Goalkeeper</option>
+                  <option value="Defender">Defender</option>
+                  <option value="Midfielder">Midfielder</option>
+                  <option value="Forward">Forward</option>
+                  <option value="Striker">Striker</option>
+                  <option value="Winger">Winger</option>
+                  <option value="Center Back">Center Back</option>
+                  <option value="Full Back">Full Back</option>
+                  <option value="Defensive Midfielder">Defensive Midfielder</option>
+                  <option value="Attacking Midfielder">Attacking Midfielder</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Jersey Number</label>
+                <input type="number" name="jersey_number" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded text-white">Add Player</button>
+                <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
+              </div>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.querySelector('#addPlayerForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const playerData = Object.fromEntries(formData);
+          
+          try {
+            if (!currentProfile?.team_id) {
+              throw new Error('You must be assigned to a team to add players');
+            }
+            await createPlayer(currentProfile.team_id, playerData);
+            modal.remove();
+            await loadDashboardData();
+            showSuccess('Player added successfully!');
+          } catch (error) {
+            showError('Failed to add player: ' + error.message);
+          }
+        });
+      }
+
+      function showAddTrainingModal() {
+        alert('Training session creation - Coming soon!');
+      }
+
+      function showAddMedicalModal() {
+        alert('Medical record creation - Coming soon!');
+      }
+
+      function showAddEventModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-slate-800 p-6 rounded-lg w-96 max-w-full max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold mb-4">Create New Event</h3>
+            <form id="addEventForm">
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Event Title</label>
+                <input type="text" name="event_title" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Event Type</label>
+                <select name="event_type" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+                  <option value="training">Training</option>
+                  <option value="game">Game</option>
+                  <option value="match">Match</option>
+                  <option value="meeting">Meeting</option>
+                  <option value="tournament">Tournament</option>
+                  <option value="medical_checkup">Medical Checkup</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Date</label>
+                <input type="date" name="event_date" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Time (Optional)</label>
+                <input type="time" name="event_time" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Location (Optional)</label>
+                <input type="text" name="location" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Description (Optional)</label>
+                <textarea name="event_description" rows="3" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"></textarea>
+              </div>
+              <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded text-white">Create Event</button>
+                <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
+              </div>
+            </form>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.querySelector('#addEventForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const eventData = Object.fromEntries(formData);
+          
+          try {
+            if (!currentProfile?.team_id) {
+              throw new Error('You must be assigned to a team to create events');
+            }
+
+            const { data, error } = await supabase
+              .from('events')
+              .insert({
+                team_id: currentProfile.team_id,
+                created_by: currentUser.id,
+                event_title: eventData.event_title,
+                event_type: eventData.event_type,
+                event_date: eventData.event_date,
+                event_time: eventData.event_time || null,
+                location: eventData.location || null,
+                event_description: eventData.event_description || null,
+                status: 'upcoming'
+              })
+              .select()
+              .single();
+
+            if (error) throw error;
+
+            modal.remove();
+            await loadScheduleEvents();
+            renderScheduleCalendar();
+            renderScheduleEventLists();
+            showSuccess('Event created successfully!');
+          } catch (error) {
+            showError('Failed to create event: ' + error.message);
+          }
+        });
+      }
+
+      function showSuccess(message) {
+        const div = document.createElement('div');
+        div.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded z-50';
+        div.textContent = message;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 3000);
+      }
+
+      // Real-time subscriptions
+      function setupRealtimeSubscriptions() {
+        if (!currentProfile?.team_id) return;
+
+        cleanupRealtimeSubscriptions();
+
+        // Subscribe to medical records changes
+        const medicalChannel = supabase
+          .channel('medical-changes')
+          .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'medical_records' },
+            async (payload) => {
+              console.log('Medical record changed:', payload);
+              await refreshDashboardSection('medical');
+            }
+          )
+          .subscribe();
+
+        // Subscribe to training sessions changes
+        const trainingChannel = supabase
+          .channel('training-changes')
+          .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'training_sessions' },
+            async (payload) => {
+              console.log('Training session changed:', payload);
+              await refreshDashboardSection('training');
+            }
+          )
+          .subscribe();
+
+        // Subscribe to events changes
+        const eventsChannel = supabase
+          .channel('events-changes')
+          .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'events' },
+            async (payload) => {
+              console.log('Event changed:', payload);
+              await refreshDashboardSection('events');
+              // Also refresh schedule page if visible
+              if (!document.getElementById('schedulePage').classList.contains('hidden')) {
+                await loadScheduleEvents();
+                renderScheduleCalendar();
+                renderScheduleEventLists();
+              }
+            }
+          )
+          .subscribe();
+
+        realtimeSubscriptions = [medicalChannel, trainingChannel, eventsChannel];
+      }
+
+      function cleanupRealtimeSubscriptions() {
+        realtimeSubscriptions.forEach(sub => {
+          supabase.removeChannel(sub);
+        });
+        realtimeSubscriptions = [];
+      }
+
+      async function refreshDashboardSection(section) {
+        if (!currentProfile?.team_id) return;
+
+        try {
+          if (section === 'medical') {
+            const medical = await getMedicalAnalytics(currentProfile.team_id).catch(() => ({ currently_injured: 0, avg_fitness_score: 0 }));
+            updateMedicalOverview(medical);
+            const availability = await getTeamAvailabilityOverview(currentProfile.team_id).catch(() => ({ summary: { total: 0, available: 0, injured: 0, restricted: 0 } }));
+            updateAvailabilityChart(availability);
+            updateDashboardMetrics(availability, teamData.dashboard, medical, teamData.trainingStats);
+          } else if (section === 'training') {
+            const trainingStats = await getTrainingAttendanceAnalytics(currentProfile.team_id, 30).catch(() => ({ avg_attendance_rate: 0, total_sessions: 0 }));
+            updateTrainingStats(trainingStats);
+            const performanceTrends = await getTeamPerformanceTrends(currentProfile.team_id, 30).catch(() => ({ avg_fitness_trend: 'stable', attendance_trend: 'stable' }));
+            updatePerformanceTrends(performanceTrends);
+          } else if (section === 'events') {
+            await updateUpcomingEventsOverview();
+          }
+        } catch (error) {
+          console.error('Error refreshing dashboard section:', error);
+        }
+      }
+
+      // User menu toggle
+      document.getElementById('userMenuBtn').addEventListener('click', () => {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.classList.toggle('hidden');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#userMenu')) {
+          document.getElementById('userDropdown').classList.add('hidden');
         }
       });
+
+      // Logout from menu
+      document.getElementById('logoutFromMenu').addEventListener('click', async () => {
+        try {
+          cleanupRealtimeSubscriptions();
+          await authManager.logout();
+          window.location.href = './login.html';
+        } catch (error) {
+          console.error('Logout failed:', error);
+        }
+      });
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        try {
+          cleanupRealtimeSubscriptions();
+          await authManager.logout();
+          window.location.href = './login.html';
+        } catch (error) {
+          console.error('Logout failed:', error);
+        }
+      });
+
+      init();
+
+      // Dark mode toggle
+      let isDarkMode = localStorage.getItem('darkMode') === 'true';
       
-      // Filter mobile cards
-      const cards = document.querySelectorAll('#playersCardView > div');
-      cards.forEach(card => {
-        if (status === 'all') {
-          card.style.display = '';
-        } else {
-          const statusDiv = card.querySelector('div:nth-child(2) > div:first-child > div:nth-child(2)');
-          if (statusDiv) {
-            const shouldShow = (
-              (status === 'available' && statusDiv.textContent.includes('Ready')) ||
-              (status === 'injured' && statusDiv.textContent.includes('Injured')) ||
-              (status === 'restricted' && statusDiv.textContent.includes('Restricted'))
-            );
-            card.style.display = shouldShow ? '' : 'none';
-          }
-        }
-      });
-    }
-
-    async function updateUpcomingEventsOverview() {
-      try {
-        if (!currentProfile?.team_id) {
-          document.getElementById('upcomingEvents').innerHTML = '<p class="text-slate-400">No team assigned</p>';
-          return;
-        }
-
-        const today = new Date();
-        const oneMonthLater = new Date();
-        oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
-
-        const { data: events, error } = await supabase
-          .from('events')
-          .select('*')
-          .eq('team_id', currentProfile.team_id)
-          .gte('event_date', today.toISOString().split('T')[0])
-          .lte('event_date', oneMonthLater.toISOString().split('T')[0])
-          .order('event_date', { ascending: true })
-          .limit(5);
-
-        const upcomingDiv = document.getElementById('upcomingEvents');
+      function toggleDarkMode() {
+        isDarkMode = !isDarkMode;
+        localStorage.setItem('darkMode', isDarkMode);
+        updateTheme();
+      }
+      
+      function updateTheme() {
+        const body = document.body;
+        const icon = document.getElementById('darkModeIcon');
         
-        if (error || !events || events.length === 0) {
-          upcomingDiv.innerHTML = '<p class="text-slate-400 text-sm">No upcoming events</p>';
-          return;
+        if (isDarkMode) {
+          body.className = 'bg-slate-900 text-slate-100';
+          icon.className = 'fas fa-sun';
+        } else {
+          body.className = 'bg-gray-100 text-gray-900';
+          icon.className = 'fas fa-moon';
         }
+      }
+      
+      document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+      updateTheme();
+
+      // Mobile menu functionality
+      document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      });
+
+      document.getElementById('closeMobileMenu').addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      });
+
+      document.getElementById('mobileMenuOverlay').addEventListener('click', () => {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      });
+
+      // Close mobile menu when nav link is clicked
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          const sidebar = document.getElementById('sidebar');
+          const overlay = document.getElementById('mobileMenuOverlay');
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+        });
+      });
+
+      // Calendar functionality for schedule page
+      let scheduleCurrentDate = new Date();
+      let scheduleEvents = [];
+
+      async function loadScheduleEvents() {
+        try {
+          if (!currentProfile?.team_id) {
+            scheduleEvents = [];
+            return;
+          }
+
+          const { data, error } = await supabase
+            .from('events')
+            .select('*')
+            .eq('team_id', currentProfile.team_id)
+            .order('event_date', { ascending: true });
+
+          if (error) {
+            console.warn('Events table error:', error);
+            scheduleEvents = [];
+          } else {
+            // Map database fields to expected format
+            scheduleEvents = (data || []).map(event => ({
+              id: event.id,
+              title: event.event_title,
+              event_type: event.event_type,
+              event_date: event.event_date,
+              event_time: event.event_time,
+              location: event.location,
+              description: event.event_description
+            }));
+            console.log('Loaded events:', scheduleEvents.length);
+          }
+        } catch (error) {
+          console.warn('Error loading events:', error);
+          scheduleEvents = [];
+        }
+      }
+
+      function renderScheduleCalendar() {
+        const monthNames = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        
+        document.getElementById('currentMonth').textContent = 
+          `${monthNames[scheduleCurrentDate.getMonth()]} ${scheduleCurrentDate.getFullYear()}`;
+
+        const firstDay = new Date(scheduleCurrentDate.getFullYear(), scheduleCurrentDate.getMonth(), 1);
+        const startDate = new Date(firstDay);
+        startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+        const calendarView = document.getElementById('calendarView');
+        calendarView.innerHTML = '';
+
+        // Day headers
+        const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        dayHeaders.forEach(day => {
+          const dayHeader = document.createElement('div');
+          dayHeader.className = 'p-2 text-center text-slate-400 font-medium text-xs';
+          dayHeader.textContent = day;
+          calendarView.appendChild(dayHeader);
+        });
+
+        // Calendar days
+        for (let i = 0; i < 42; i++) {
+          const date = new Date(startDate);
+          date.setDate(startDate.getDate() + i);
+          
+          const dayEvents = scheduleEvents.filter(event => {
+            const eventDate = new Date(event.event_date);
+            return eventDate.toDateString() === date.toDateString();
+          });
+          
+          const dayElement = document.createElement('div');
+          dayElement.className = `p-1 text-center cursor-pointer rounded transition h-16 sm:h-20 ${
+            date.getMonth() === scheduleCurrentDate.getMonth() 
+              ? 'text-white hover:bg-slate-700' 
+              : 'text-slate-500'
+          } ${dayEvents.length > 0 ? 'bg-blue-900 border border-blue-600' : ''}`;
+          
+          let eventsHtml = '';
+          if (dayEvents.length > 0) {
+            eventsHtml = dayEvents.slice(0, 1).map(event => 
+              `<div class="text-xs bg-red-600 text-white px-1 rounded mt-1 truncate" onclick="viewEvent('${event.id}')" title="${event.title}">${event.title}</div>`
+            ).join('');
+            if (dayEvents.length > 1) {
+              eventsHtml += `<div class="text-xs text-blue-300 mt-1">+${dayEvents.length - 1}</div>`;
+            }
+          }
+          
+          dayElement.innerHTML = `
+            <div class="text-sm font-medium">${date.getDate()}</div>
+            ${eventsHtml}
+          `;
+          
+          if (dayEvents.length > 0) {
+            dayElement.title = dayEvents.map(e => e.title).join(', ');
+          }
+          
+          calendarView.appendChild(dayElement);
+        }
+      }
+
+      // Calendar navigation
+      document.getElementById('prevMonth')?.addEventListener('click', () => {
+        scheduleCurrentDate.setMonth(scheduleCurrentDate.getMonth() - 1);
+        renderScheduleCalendar();
+        renderScheduleEventLists();
+      });
+
+      document.getElementById('nextMonth')?.addEventListener('click', () => {
+        scheduleCurrentDate.setMonth(scheduleCurrentDate.getMonth() + 1);
+        renderScheduleCalendar();
+        renderScheduleEventLists();
+      });
+
+      // Add Event button handler
+      document.getElementById('addEventBtn').addEventListener('click', () => {
+        showAddEventModal();
+      });
+
+      // Render calendar when schedule page is shown
+      document.querySelector('[data-page="schedule"]').addEventListener('click', () => {
+        setTimeout(async () => {
+          await loadScheduleEvents();
+          renderScheduleCalendar();
+          renderScheduleEventLists();
+        }, 100);
+      });
+
+      function renderScheduleEventLists() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const currentMonth = scheduleCurrentDate.getMonth();
+        const currentYear = scheduleCurrentDate.getFullYear();
+
+        // Filter events for the current viewed month
+        const monthEvents = scheduleEvents.filter(event => {
+          const eventDate = new Date(event.event_date);
+          return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+        });
+
+        // Split into upcoming and previous
+        const upcoming = monthEvents.filter(event => new Date(event.event_date) >= today);
+        const previous = monthEvents.filter(event => new Date(event.event_date) < today).reverse();
 
         const typeColors = {
           'training': 'bg-green-900 text-green-300',
@@ -860,1023 +1771,112 @@
           'medical_checkup': 'bg-orange-900 text-orange-300'
         };
 
-        upcomingDiv.innerHTML = events.map(event => {
+        const renderEventCard = (event) => {
           const eventDate = new Date(event.event_date);
-          const daysUntil = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
           return `
-            <div class="bg-slate-700 p-3 rounded hover:bg-slate-600 transition cursor-pointer" onclick="viewEventDetails('${event.id}')">
-              <div class="flex justify-between items-start mb-1">
-                <h5 class="font-medium text-sm">${event.event_title}</h5>
+            <div class="bg-slate-700 p-3 rounded cursor-pointer hover:bg-slate-600" onclick="viewEvent('${event.id}')">
+              <div class="flex justify-between items-start mb-2">
+                <h4 class="font-medium text-sm">${event.title}</h4>
                 <span class="px-2 py-1 rounded text-xs ${typeColors[event.event_type] || 'bg-slate-600 text-slate-300'}">
                   ${event.event_type}
                 </span>
               </div>
               <p class="text-slate-400 text-xs">${eventDate.toLocaleDateString()}${event.event_time ? ' at ' + event.event_time : ''}</p>
-              <p class="text-slate-500 text-xs mt-1">${daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}</p>
+              ${event.location ? `<p class="text-slate-400 text-xs"><i class="fas fa-map-marker-alt mr-1"></i>${event.location}</p>` : ''}
             </div>
           `;
-        }).join('');
-      } catch (error) {
-        console.error('Error loading upcoming events:', error);
-        document.getElementById('upcomingEvents').innerHTML = '<p class="text-slate-400 text-sm">Error loading events</p>';
-      }
-    }
+        };
 
-    function showPage(page) {
-      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
-      
-      // Handle special pages that redirect to separate files
-      if (page === 'medical') {
-        window.location.href = './medical.html';
-        return;
-      }
-      if (page === 'training') {
-        window.location.href = './training.html';
-        return;
-      }
-      
-      const pageElement = document.getElementById(page + 'Page');
-      if (pageElement) {
-        pageElement.classList.remove('hidden');
-        updatePageTitle(page);
-      }
-    }
-
-    function updatePageTitle(page) {
-      const titles = {
-        overview: 'Dashboard',
-        players: 'Team Players',
-        training: 'Training Sessions',
-        medical: 'Medical Records',
-        schedule: 'Schedule & Events',
-        teams: 'Team Management'
-      };
-      document.getElementById('pageTitle').textContent = titles[page] || 'Sports Hub';
-    }
-
-    // Global functions for button clicks
-    window.viewPlayer = async (playerId) => {
-      try {
-        const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?id=eq.${playerId}&select=*`, {
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
-          }
-        });
-        const player = (await response.json())[0];
-        showPlayerViewModal(player);
-      } catch (error) {
-        showError('Error loading player: ' + error.message);
-      }
-    };
-
-    window.editPlayer = async (playerId) => {
-      try {
-        const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?id=eq.${playerId}&select=*`, {
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
-          }
-        });
-        const player = (await response.json())[0];
-        showPlayerEditModal(player);
-      } catch (error) {
-        showError('Error loading player: ' + error.message);
-      }
-    };
-
-    function showPlayerViewModal(player) {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-lg w-96">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Player Profile</h3>
-            <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          <div class="space-y-3">
-            <div><span class="text-slate-400">Name:</span> ${player.first_name} ${player.last_name}</div>
-            <div><span class="text-slate-400">Jersey:</span> #${player.jersey_number}</div>
-            <div><span class="text-slate-400">Position:</span> ${player.position}</div>
-            <div><span class="text-slate-400">Age:</span> ${player.age}</div>
-            ${player.height_cm ? `<div><span class="text-slate-400">Height:</span> ${player.height_cm} cm</div>` : ''}
-            ${player.weight_kg ? `<div><span class="text-slate-400">Weight:</span> ${player.weight_kg} kg</div>` : ''}
-          </div>
-          <div class="mt-6 text-center">
-            <button onclick="this.closest('.fixed').remove()" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded">
-              Close
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-
-    function showPlayerEditModal(player) {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-lg w-96">
-          <h3 class="text-xl font-bold mb-4">Edit Player</h3>
-          <form id="editPlayerForm">
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">First Name</label>
-              <input type="text" name="first_name" value="${player.first_name}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Last Name</label>
-              <input type="text" name="last_name" value="${player.last_name}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Age</label>
-              <input type="number" name="age" value="${player.age}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Position</label>
-              <select name="position" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-                <option value="Goalkeeper" ${player.position === 'Goalkeeper' ? 'selected' : ''}>Goalkeeper</option>
-                <option value="Defender" ${player.position === 'Defender' ? 'selected' : ''}>Defender</option>
-                <option value="Midfielder" ${player.position === 'Midfielder' ? 'selected' : ''}>Midfielder</option>
-                <option value="Forward" ${player.position === 'Forward' ? 'selected' : ''}>Forward</option>
-                <option value="Striker" ${player.position === 'Striker' ? 'selected' : ''}>Striker</option>
-                <option value="Winger" ${player.position === 'Winger' ? 'selected' : ''}>Winger</option>
-                <option value="Center Back" ${player.position === 'Center Back' ? 'selected' : ''}>Center Back</option>
-                <option value="Full Back" ${player.position === 'Full Back' ? 'selected' : ''}>Full Back</option>
-                <option value="Defensive Midfielder" ${player.position === 'Defensive Midfielder' ? 'selected' : ''}>Defensive Midfielder</option>
-                <option value="Attacking Midfielder" ${player.position === 'Attacking Midfielder' ? 'selected' : ''}>Attacking Midfielder</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Jersey Number</label>
-              <input type="number" name="jersey_number" value="${player.jersey_number}" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="flex gap-2">
-              <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 py-2 rounded text-white">Update</button>
-              <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
-            </div>
-          </form>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      
-      modal.querySelector('#editPlayerForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const playerData = Object.fromEntries(formData);
-        
-        try {
-          const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?id=eq.${player.id}`, {
-            method: 'PATCH',
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(playerData)
-          });
-          
-          if (response.ok) {
-            modal.remove();
-            await loadDashboardData();
-            showSuccess('Player updated successfully!');
-          } else {
-            showError('Failed to update player');
-          }
-        } catch (error) {
-          showError('Error updating player: ' + error.message);
-        }
-      });
-    }
-
-    // Add Player button handler
-    document.getElementById('addPlayerBtn').addEventListener('click', () => {
-      showAddPlayerModal();
-    });
-
-    // Add Training button handler
-    document.getElementById('addTrainingBtn').addEventListener('click', () => {
-      showAddTrainingModal();
-    });
-
-    // Add Medical button handler
-    document.getElementById('addMedicalBtn').addEventListener('click', () => {
-      showAddMedicalModal();
-    });
-
-    // Add Team button handler
-    document.getElementById('addTeamBtn').addEventListener('click', () => {
-      showAddTeamModal();
-    });
-
-    function showAddTeamModal() {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-lg w-96">
-          <h3 class="text-xl font-bold mb-4">Create New Team</h3>
-          <form id="addTeamForm">
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Team Name</label>
-              <input type="text" name="name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Sport</label>
-              <input type="text" name="sport" value="Soccer" readonly class="w-full px-3 py-2 bg-slate-600 border border-slate-600 rounded text-slate-400">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Season</label>
-              <input type="text" name="season" value="2024" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="flex gap-2">
-              <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 py-2 rounded text-white">Create</button>
-              <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
-            </div>
-          </form>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      
-      modal.querySelector('#addTeamForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const teamData = Object.fromEntries(formData);
-        
-        try {
-          const response = await fetch('https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams', {
-            method: 'POST',
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              name: teamData.name,
-              sport: 'Soccer',
-              season: teamData.season,
-              active: true
-            })
-          });
-          
-          if (response.ok) {
-            modal.remove();
-            loadTeams();
-            showSuccess('Team created successfully!');
-          } else {
-            showError('Failed to create team');
-          }
-        } catch (error) {
-          showError('Error: ' + error.message);
-        }
-      });
-    }
-
-    async function loadTeams() {
-      try {
-        const response = await fetch('https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams?select=*', {
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
-          }
-        });
-        
-        const teams = await response.json();
-        const grid = document.getElementById('teamsGrid');
-        
-        if (teams.length === 0) {
-          grid.innerHTML = '<div class="col-span-full bg-slate-800 p-6 rounded-lg text-center text-slate-400">No teams found. Create your first team!</div>';
+        // Render upcoming events
+        const upcomingList = document.getElementById('scheduleUpcomingList');
+        if (upcoming.length === 0) {
+          upcomingList.innerHTML = '<p class="text-slate-400 text-sm">No upcoming events this month</p>';
         } else {
-          grid.innerHTML = teams.map(team => `
-            <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-              <div class="flex justify-between items-start mb-4">
-                <h4 class="text-xl font-bold">${team.name}</h4>
-                <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded text-sm">${team.sport}</span>
-              </div>
-              <p class="text-slate-400 mb-4">Season: ${team.season}</p>
-              <div class="flex gap-2">
-                <button onclick="viewTeamDetails('${team.id}', '${team.name}')" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">
-                  View Details
-                </button>
-                <button onclick="deleteTeam('${team.id}')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
-                  Delete
-                </button>
-              </div>
-            </div>
-          `).join('');
+          upcomingList.innerHTML = upcoming.map(renderEventCard).join('');
         }
-      } catch (error) {
-        document.getElementById('teamsGrid').innerHTML = `<div class="text-red-400">Error: ${error.message}</div>`;
-      }
-    }
 
-    window.viewTeamDetails = async (teamId, teamName) => {
-      try {
-        // Fetch players
-        const playersResponse = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/players?team_id=eq.${teamId}&select=*`, {
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
-          }
-        });
-        const players = await playersResponse.json();
-
-        // Fetch coach
-        const coachResponse = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams?id=eq.${teamId}&select=*,users!coach_id(full_name)`, {
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
-          }
-        });
-        const teamData = await coachResponse.json();
-        console.log('Team data:', teamData); // Debug log
-        const coach = teamData[0]?.users?.full_name || 'No coach assigned';
-
-        showTeamDetailsModal(teamName, players, coach);
-      } catch (error) {
-        showError('Error loading team details: ' + error.message);
-      }
-    };
-
-    function showTeamDetailsModal(teamName, players, coach) {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">${teamName} - Team Details</h3>
-            <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          
-          <div class="mb-6">
-            <h4 class="text-lg font-semibold mb-2 text-blue-400">Coach</h4>
-            <div class="bg-slate-700 p-3 rounded">
-              <p class="text-slate-200">${coach}</p>
-            </div>
-          </div>
-
-          <div>
-            <h4 class="text-lg font-semibold mb-2 text-green-400">Players (${players.length})</h4>
-            ${players.length === 0 ? 
-              '<div class="bg-slate-700 p-3 rounded text-slate-400">No players assigned to this team</div>' :
-              `<div class="grid gap-2">
-                ${players.map(player => `
-                  <div class="bg-slate-700 p-3 rounded flex justify-between items-center">
-                    <div>
-                      <span class="font-medium text-slate-200">${player.first_name} ${player.last_name}</span>
-                      <span class="text-slate-400 ml-2">#${player.jersey_number}</span>
-                    </div>
-                    <span class="text-slate-400 text-sm">${player.position}</span>
-                  </div>
-                `).join('')}
-              </div>`
-            }
-          </div>
-          
-          <div class="mt-6 text-center">
-            <button onclick="this.closest('.fixed').remove()" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded">
-              Close
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-
-    window.deleteTeam = async (teamId) => {
-      if (!confirm('Delete this team?')) return;
-      
-      try {
-        const response = await fetch(`https://guyppjhpjfzrfxldltjz.supabase.co/rest/v1/teams?id=eq.${teamId}`, {
-          method: 'DELETE',
-          headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1eXBwamhwamZ6cmZ4bGRsdGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDI1OTIsImV4cCI6MjA4NDQ3ODU5Mn0.6hUP3Ur2FYxBtZCb8SYz1cWq8VnIuzhdxvT1-tAtIC4'
-          }
-        });
-        
-        if (response.ok) {
-          loadTeams();
-          showSuccess('Team deleted successfully!');
+        // Render previous events
+        const previousList = document.getElementById('schedulePreviousList');
+        if (previous.length === 0) {
+          previousList.innerHTML = '<p class="text-slate-400 text-sm">No previous events this month</p>';
+        } else {
+          previousList.innerHTML = previous.map(renderEventCard).join('');
         }
-      } catch (error) {
-        showError('Error: ' + error.message);
       }
-    };
 
-    // Load teams when teams page is shown
-    document.querySelector('[data-page="teams"]').addEventListener('click', () => {
-      setTimeout(loadTeams, 100);
-    });
+      window.viewEvent = function(eventId) {
+        const event = scheduleEvents.find(e => e.id === eventId);
+        if (event) {
+          const eventDate = new Date(event.event_date);
+          const eventTime = event.event_time ? ` at ${event.event_time}` : '';
+          alert(`Event: ${event.title}\nDate: ${eventDate.toLocaleDateString()}${eventTime}\nType: ${event.event_type}\nLocation: ${event.location || 'TBD'}\nDescription: ${event.description || 'No description'}`);
+        }
+      };
 
-    function showAddPlayerModal() {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-lg w-96 max-w-full">
-          <h3 class="text-xl font-bold mb-4">Add New Player</h3>
-          <form id="addPlayerForm">
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">First Name</label>
-              <input type="text" name="first_name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Last Name</label>
-              <input type="text" name="last_name" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Age</label>
-              <input type="number" name="age" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Position</label>
-              <select name="position" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-                <option value="Goalkeeper">Goalkeeper</option>
-                <option value="Defender">Defender</option>
-                <option value="Midfielder">Midfielder</option>
-                <option value="Forward">Forward</option>
-                <option value="Striker">Striker</option>
-                <option value="Winger">Winger</option>
-                <option value="Center Back">Center Back</option>
-                <option value="Full Back">Full Back</option>
-                <option value="Defensive Midfielder">Defensive Midfielder</option>
-                <option value="Attacking Midfielder">Attacking Midfielder</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Jersey Number</label>
-              <input type="number" name="jersey_number" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="flex gap-2">
-              <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded text-white">Add Player</button>
-              <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
-            </div>
-          </form>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      
-      modal.querySelector('#addPlayerForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const playerData = Object.fromEntries(formData);
-        
+      window.viewEventDetails = async function(eventId) {
         try {
-          if (!currentProfile?.team_id) {
-            throw new Error('You must be assigned to a team to add players');
-          }
-          await createPlayer(currentProfile.team_id, playerData);
-          modal.remove();
-          await loadDashboardData();
-          showSuccess('Player added successfully!');
-        } catch (error) {
-          showError('Failed to add player: ' + error.message);
-        }
-      });
-    }
-
-    function showAddTrainingModal() {
-      alert('Training session creation - Coming soon!');
-    }
-
-    function showAddMedicalModal() {
-      alert('Medical record creation - Coming soon!');
-    }
-
-    function showAddEventModal() {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-slate-800 p-6 rounded-lg w-96 max-w-full max-h-[90vh] overflow-y-auto">
-          <h3 class="text-xl font-bold mb-4">Create New Event</h3>
-          <form id="addEventForm">
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Event Title</label>
-              <input type="text" name="event_title" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Event Type</label>
-              <select name="event_type" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-                <option value="training">Training</option>
-                <option value="game">Game</option>
-                <option value="match">Match</option>
-                <option value="meeting">Meeting</option>
-                <option value="tournament">Tournament</option>
-                <option value="medical_checkup">Medical Checkup</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Date</label>
-              <input type="date" name="event_date" required class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Time (Optional)</label>
-              <input type="time" name="event_time" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Location (Optional)</label>
-              <input type="text" name="location" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Description (Optional)</label>
-              <textarea name="event_description" rows="3" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"></textarea>
-            </div>
-            <div class="flex gap-2">
-              <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded text-white">Create Event</button>
-              <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-slate-600 hover:bg-slate-700 py-2 rounded text-white">Cancel</button>
-            </div>
-          </form>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      
-      modal.querySelector('#addEventForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const eventData = Object.fromEntries(formData);
-        
-        try {
-          if (!currentProfile?.team_id) {
-            throw new Error('You must be assigned to a team to create events');
-          }
-
-          const { data, error } = await supabase
+          const { data: event, error } = await supabase
             .from('events')
-            .insert({
-              team_id: currentProfile.team_id,
-              created_by: currentUser.id,
-              event_title: eventData.event_title,
-              event_type: eventData.event_type,
-              event_date: eventData.event_date,
-              event_time: eventData.event_time || null,
-              location: eventData.location || null,
-              event_description: eventData.event_description || null,
-              status: 'upcoming'
-            })
-            .select()
+            .select('*')
+            .eq('id', eventId)
             .single();
 
-          if (error) throw error;
-
-          modal.remove();
-          await loadScheduleEvents();
-          renderScheduleCalendar();
-          renderScheduleEventLists();
-          showSuccess('Event created successfully!');
-        } catch (error) {
-          showError('Failed to create event: ' + error.message);
-        }
-      });
-    }
-
-    function showSuccess(message) {
-      const div = document.createElement('div');
-      div.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded z-50';
-      div.textContent = message;
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 3000);
-    }
-
-    // Real-time subscriptions
-    function setupRealtimeSubscriptions() {
-      if (!currentProfile?.team_id) return;
-
-      cleanupRealtimeSubscriptions();
-
-      // Subscribe to medical records changes
-      const medicalChannel = supabase
-        .channel('medical-changes')
-        .on('postgres_changes', 
-          { event: '*', schema: 'public', table: 'medical_records' },
-          async (payload) => {
-            console.log('Medical record changed:', payload);
-            await refreshDashboardSection('medical');
+          if (error || !event) {
+            alert('Event not found');
+            return;
           }
-        )
-        .subscribe();
 
-      // Subscribe to training sessions changes
-      const trainingChannel = supabase
-        .channel('training-changes')
-        .on('postgres_changes',
-          { event: '*', schema: 'public', table: 'training_sessions' },
-          async (payload) => {
-            console.log('Training session changed:', payload);
-            await refreshDashboardSection('training');
-          }
-        )
-        .subscribe();
-
-      // Subscribe to events changes
-      const eventsChannel = supabase
-        .channel('events-changes')
-        .on('postgres_changes',
-          { event: '*', schema: 'public', table: 'events' },
-          async (payload) => {
-            console.log('Event changed:', payload);
-            await refreshDashboardSection('events');
-            // Also refresh schedule page if visible
-            if (!document.getElementById('schedulePage').classList.contains('hidden')) {
-              await loadScheduleEvents();
-              renderScheduleCalendar();
-              renderScheduleEventLists();
-            }
-          }
-        )
-        .subscribe();
-
-      realtimeSubscriptions = [medicalChannel, trainingChannel, eventsChannel];
-    }
-
-    function cleanupRealtimeSubscriptions() {
-      realtimeSubscriptions.forEach(sub => {
-        supabase.removeChannel(sub);
-      });
-      realtimeSubscriptions = [];
-    }
-
-    async function refreshDashboardSection(section) {
-      if (!currentProfile?.team_id) return;
-
-      try {
-        if (section === 'medical') {
-          const medical = await getMedicalAnalytics(currentProfile.team_id).catch(() => ({ currently_injured: 0, avg_fitness_score: 0 }));
-          updateMedicalOverview(medical);
-          const availability = await getTeamAvailabilityOverview(currentProfile.team_id).catch(() => ({ summary: { total: 0, available: 0, injured: 0, restricted: 0 } }));
-          updateAvailabilityChart(availability);
-          updateDashboardMetrics(availability, teamData.dashboard, medical, teamData.trainingStats);
-        } else if (section === 'training') {
-          const trainingStats = await getTrainingAttendanceAnalytics(currentProfile.team_id, 30).catch(() => ({ avg_attendance_rate: 0, total_sessions: 0 }));
-          updateTrainingStats(trainingStats);
-          const performanceTrends = await getTeamPerformanceTrends(currentProfile.team_id, 30).catch(() => ({ avg_fitness_trend: 'stable', attendance_trend: 'stable' }));
-          updatePerformanceTrends(performanceTrends);
-        } else if (section === 'events') {
-          await updateUpcomingEventsOverview();
-        }
-      } catch (error) {
-        console.error('Error refreshing dashboard section:', error);
-      }
-    }
-
-    // User menu toggle
-    document.getElementById('userMenuBtn').addEventListener('click', () => {
-      const dropdown = document.getElementById('userDropdown');
-      dropdown.classList.toggle('hidden');
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#userMenu')) {
-        document.getElementById('userDropdown').classList.add('hidden');
-      }
-    });
-
-    // Logout from menu
-    document.getElementById('logoutFromMenu').addEventListener('click', async () => {
-      try {
-        cleanupRealtimeSubscriptions();
-        await authManager.logout();
-        window.location.href = './login.html';
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-    });
-
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      try {
-        cleanupRealtimeSubscriptions();
-        await authManager.logout();
-        window.location.href = './login.html';
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-    });
-
-    init();
-
-    // Dark mode toggle
-    let isDarkMode = localStorage.getItem('darkMode') === 'true';
-    
-    function toggleDarkMode() {
-      isDarkMode = !isDarkMode;
-      localStorage.setItem('darkMode', isDarkMode);
-      updateTheme();
-    }
-    
-    function updateTheme() {
-      const body = document.body;
-      const icon = document.getElementById('darkModeIcon');
-      
-      if (isDarkMode) {
-        body.className = 'bg-slate-900 text-slate-100';
-        icon.className = 'fas fa-sun';
-      } else {
-        body.className = 'bg-gray-100 text-gray-900';
-        icon.className = 'fas fa-moon';
-      }
-    }
-    
-    document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-    updateTheme();
-
-    // Mobile menu functionality
-    document.getElementById('mobileMenuToggle').addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileMenuOverlay');
-      sidebar.classList.remove('-translate-x-full');
-      overlay.classList.remove('hidden');
-    });
-
-    document.getElementById('closeMobileMenu').addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileMenuOverlay');
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-
-    document.getElementById('mobileMenuOverlay').addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileMenuOverlay');
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-
-    // Close mobile menu when nav link is clicked
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobileMenuOverlay');
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      });
-    });
-
-    // Calendar functionality for schedule page
-    let scheduleCurrentDate = new Date();
-    let scheduleEvents = [];
-
-    async function loadScheduleEvents() {
-      try {
-        if (!currentProfile?.team_id) {
-          scheduleEvents = [];
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from('events')
-          .select('*')
-          .eq('team_id', currentProfile.team_id)
-          .order('event_date', { ascending: true });
-
-        if (error) {
-          console.warn('Events table error:', error);
-          scheduleEvents = [];
-        } else {
-          // Map database fields to expected format
-          scheduleEvents = (data || []).map(event => ({
-            id: event.id,
-            title: event.event_title,
-            event_type: event.event_type,
-            event_date: event.event_date,
-            event_time: event.event_time,
-            location: event.location,
-            description: event.event_description
-          }));
-          console.log('Loaded events:', scheduleEvents.length);
-        }
-      } catch (error) {
-        console.warn('Error loading events:', error);
-        scheduleEvents = [];
-      }
-    }
-
-    function renderScheduleCalendar() {
-      const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-      ];
-      
-      document.getElementById('currentMonth').textContent = 
-        `${monthNames[scheduleCurrentDate.getMonth()]} ${scheduleCurrentDate.getFullYear()}`;
-
-      const firstDay = new Date(scheduleCurrentDate.getFullYear(), scheduleCurrentDate.getMonth(), 1);
-      const startDate = new Date(firstDay);
-      startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-      const calendarView = document.getElementById('calendarView');
-      calendarView.innerHTML = '';
-
-      // Day headers
-      const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      dayHeaders.forEach(day => {
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'p-2 text-center text-slate-400 font-medium text-xs';
-        dayHeader.textContent = day;
-        calendarView.appendChild(dayHeader);
-      });
-
-      // Calendar days
-      for (let i = 0; i < 42; i++) {
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i);
-        
-        const dayEvents = scheduleEvents.filter(event => {
           const eventDate = new Date(event.event_date);
-          return eventDate.toDateString() === date.toDateString();
-        });
-        
-        const dayElement = document.createElement('div');
-        dayElement.className = `p-1 text-center cursor-pointer rounded transition h-16 sm:h-20 ${
-          date.getMonth() === scheduleCurrentDate.getMonth() 
-            ? 'text-white hover:bg-slate-700' 
-            : 'text-slate-500'
-        } ${dayEvents.length > 0 ? 'bg-blue-900 border border-blue-600' : ''}`;
-        
-        let eventsHtml = '';
-        if (dayEvents.length > 0) {
-          eventsHtml = dayEvents.slice(0, 1).map(event => 
-            `<div class="text-xs bg-red-600 text-white px-1 rounded mt-1 truncate" onclick="viewEvent('${event.id}')" title="${event.title}">${event.title}</div>`
-          ).join('');
-          if (dayEvents.length > 1) {
-            eventsHtml += `<div class="text-xs text-blue-300 mt-1">+${dayEvents.length - 1}</div>`;
-          }
+          const eventTime = event.event_time ? ` at ${event.event_time}` : '';
+          const modal = document.createElement('div');
+          modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+          modal.innerHTML = `
+            <div class="bg-slate-800 p-6 rounded-lg w-96 max-w-full">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">${event.event_title}</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="space-y-3 text-sm">
+                <div>
+                  <span class="text-slate-400">Date:</span>
+                  <span class="ml-2">${eventDate.toLocaleDateString()}${eventTime}</span>
+                </div>
+                <div>
+                  <span class="text-slate-400">Type:</span>
+                  <span class="ml-2 capitalize">${event.event_type}</span>
+                </div>
+                ${event.location ? `
+                <div>
+                  <span class="text-slate-400">Location:</span>
+                  <span class="ml-2">${event.location}</span>
+                </div>
+                ` : ''}
+                ${event.event_description ? `
+                <div>
+                  <span class="text-slate-400">Description:</span>
+                  <p class="mt-1 text-slate-300">${event.event_description}</p>
+                </div>
+                ` : ''}
+                <div>
+                  <span class="text-slate-400">Status:</span>
+                  <span class="ml-2 capitalize">${event.status || 'upcoming'}</span>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <button onclick="this.closest('.fixed').remove()" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded">
+                  Close
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+        } catch (error) {
+          console.error('Error loading event:', error);
+          alert('Error loading event details');
         }
-        
-        dayElement.innerHTML = `
-          <div class="text-sm font-medium">${date.getDate()}</div>
-          ${eventsHtml}
-        `;
-        
-        if (dayEvents.length > 0) {
-          dayElement.title = dayEvents.map(e => e.title).join(', ');
-        }
-        
-        calendarView.appendChild(dayElement);
-      }
-    }
-
-    // Calendar navigation
-    document.getElementById('prevMonth')?.addEventListener('click', () => {
-      scheduleCurrentDate.setMonth(scheduleCurrentDate.getMonth() - 1);
-      renderScheduleCalendar();
-      renderScheduleEventLists();
-    });
-
-    document.getElementById('nextMonth')?.addEventListener('click', () => {
-      scheduleCurrentDate.setMonth(scheduleCurrentDate.getMonth() + 1);
-      renderScheduleCalendar();
-      renderScheduleEventLists();
-    });
-
-    // Add Event button handler
-    document.getElementById('addEventBtn').addEventListener('click', () => {
-      showAddEventModal();
-    });
-
-    // Render calendar when schedule page is shown
-    document.querySelector('[data-page="schedule"]').addEventListener('click', () => {
-      setTimeout(async () => {
-        await loadScheduleEvents();
-        renderScheduleCalendar();
-        renderScheduleEventLists();
-      }, 100);
-    });
-
-    function renderScheduleEventLists() {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const currentMonth = scheduleCurrentDate.getMonth();
-      const currentYear = scheduleCurrentDate.getFullYear();
-
-      // Filter events for the current viewed month
-      const monthEvents = scheduleEvents.filter(event => {
-        const eventDate = new Date(event.event_date);
-        return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
-      });
-
-      // Split into upcoming and previous
-      const upcoming = monthEvents.filter(event => new Date(event.event_date) >= today);
-      const previous = monthEvents.filter(event => new Date(event.event_date) < today).reverse();
-
-      const typeColors = {
-        'training': 'bg-green-900 text-green-300',
-        'game': 'bg-red-900 text-red-300',
-        'match': 'bg-red-900 text-red-300',
-        'meeting': 'bg-blue-900 text-blue-300',
-        'tournament': 'bg-purple-900 text-purple-300',
-        'medical_checkup': 'bg-orange-900 text-orange-300'
       };
-
-      const renderEventCard = (event) => {
-        const eventDate = new Date(event.event_date);
-        return `
-          <div class="bg-slate-700 p-3 rounded cursor-pointer hover:bg-slate-600" onclick="viewEvent('${event.id}')">
-            <div class="flex justify-between items-start mb-2">
-              <h4 class="font-medium text-sm">${event.title}</h4>
-              <span class="px-2 py-1 rounded text-xs ${typeColors[event.event_type] || 'bg-slate-600 text-slate-300'}">
-                ${event.event_type}
-              </span>
-            </div>
-            <p class="text-slate-400 text-xs">${eventDate.toLocaleDateString()}${event.event_time ? ' at ' + event.event_time : ''}</p>
-            ${event.location ? `<p class="text-slate-400 text-xs"><i class="fas fa-map-marker-alt mr-1"></i>${event.location}</p>` : ''}
-          </div>
-        `;
-      };
-
-      // Render upcoming events
-      const upcomingList = document.getElementById('scheduleUpcomingList');
-      if (upcoming.length === 0) {
-        upcomingList.innerHTML = '<p class="text-slate-400 text-sm">No upcoming events this month</p>';
-      } else {
-        upcomingList.innerHTML = upcoming.map(renderEventCard).join('');
-      }
-
-      // Render previous events
-      const previousList = document.getElementById('schedulePreviousList');
-      if (previous.length === 0) {
-        previousList.innerHTML = '<p class="text-slate-400 text-sm">No previous events this month</p>';
-      } else {
-        previousList.innerHTML = previous.map(renderEventCard).join('');
-      }
-    }
-
-    window.viewEvent = function(eventId) {
-      const event = scheduleEvents.find(e => e.id === eventId);
-      if (event) {
-        const eventDate = new Date(event.event_date);
-        const eventTime = event.event_time ? ` at ${event.event_time}` : '';
-        alert(`Event: ${event.title}\nDate: ${eventDate.toLocaleDateString()}${eventTime}\nType: ${event.event_type}\nLocation: ${event.location || 'TBD'}\nDescription: ${event.description || 'No description'}`);
-      }
-    };
-
-    window.viewEventDetails = async function(eventId) {
-      try {
-        const { data: event, error } = await supabase
-          .from('events')
-          .select('*')
-          .eq('id', eventId)
-          .single();
-
-        if (error || !event) {
-          alert('Event not found');
-          return;
-        }
-
-        const eventDate = new Date(event.event_date);
-        const eventTime = event.event_time ? ` at ${event.event_time}` : '';
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-        modal.innerHTML = `
-          <div class="bg-slate-800 p-6 rounded-lg w-96 max-w-full">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-xl font-bold">${event.event_title}</h3>
-              <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <div class="space-y-3 text-sm">
-              <div>
-                <span class="text-slate-400">Date:</span>
-                <span class="ml-2">${eventDate.toLocaleDateString()}${eventTime}</span>
-              </div>
-              <div>
-                <span class="text-slate-400">Type:</span>
-                <span class="ml-2 capitalize">${event.event_type}</span>
-              </div>
-              ${event.location ? `
-              <div>
-                <span class="text-slate-400">Location:</span>
-                <span class="ml-2">${event.location}</span>
-              </div>
-              ` : ''}
-              ${event.event_description ? `
-              <div>
-                <span class="text-slate-400">Description:</span>
-                <p class="mt-1 text-slate-300">${event.event_description}</p>
-              </div>
-              ` : ''}
-              <div>
-                <span class="text-slate-400">Status:</span>
-                <span class="ml-2 capitalize">${event.status || 'upcoming'}</span>
-              </div>
-            </div>
-            <div class="mt-6 text-center">
-              <button onclick="this.closest('.fixed').remove()" class="bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded">
-                Close
-              </button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-      } catch (error) {
-        console.error('Error loading event:', error);
-        alert('Error loading event details');
-      }
-    };
-  </script>
-</body>
-</html>
+    </script>
+  </body>
+  </html>

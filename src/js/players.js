@@ -75,10 +75,18 @@ export async function uploadPlayerPhoto(file, playerId) {
   return data.publicUrl;
 }
 
+// Cache for player progress reports to prevent repeated API calls
+const playerProgressCache = new Map();
+
 /**
  * Get player full progress report: attendance streak, performance score, recommendation
  */
 export async function getPlayerProgressReport(playerId) {
+  // Check cache first
+  if (playerProgressCache.has(playerId)) {
+    return playerProgressCache.get(playerId);
+  }
+
   const [{ data: player }, { data: stats }, { data: attendance }] = await Promise.all([
     supabase.from('players').select('*').eq('id', playerId).single(),
     supabase.from('player_stats').select('*').eq('player_id', playerId).single(),
@@ -121,7 +129,7 @@ export async function getPlayerProgressReport(playerId) {
   else if (attendanceRate >= 40) recommendation = 'Monitor';
   else recommendation = 'Needs Improvement';
 
-  return {
+  const result = {
     player,
     stats,
     attendanceRate: Math.round(attendanceRate),
@@ -131,6 +139,21 @@ export async function getPlayerProgressReport(playerId) {
     performanceScore,
     recommendation
   };
+
+  // Cache the result
+  playerProgressCache.set(playerId, result);
+  return result;
+}
+
+/**
+ * Clear player progress cache
+ */
+export function clearPlayerProgressCache(playerId = null) {
+  if (playerId) {
+    playerProgressCache.delete(playerId);
+  } else {
+    playerProgressCache.clear();
+  }
 }
 
 /**
