@@ -58,11 +58,11 @@
         <button class="tab-btn active px-4 py-2 text-sm font-medium border-b-2 border-blue-500 text-white whitespace-nowrap" data-tab="attendance">
           <i class="fas fa-clipboard-list mr-2"></i>Attendance
         </button>
-        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white whitespace-nowrap" data-tab="drills">
-          <i class="fas fa-dumbbell mr-2"></i>Drills
-        </button>
         <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white whitespace-nowrap" data-tab="progress">
           <i class="fas fa-chart-bar mr-2"></i>Player Progress
+        </button>
+        <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white whitespace-nowrap" data-tab="drills">
+          <i class="fas fa-running mr-2"></i>Player Drills &amp; Exercises
         </button>
         <button class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white whitespace-nowrap" data-tab="history">
           <i class="fas fa-history mr-2"></i>History
@@ -98,41 +98,22 @@
 
       <!-- DRILLS TAB -->
       <div id="tab-drills" class="tab-content hidden">
-        <!-- Date selector + Team summary bar -->
+        <!-- Drill date selector + summary bar -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div class="flex items-center gap-3">
             <label class="text-sm text-slate-400">Session Date:</label>
             <input type="date" id="drillDate" class="bg-slate-700 border border-slate-600 rounded px-3 py-1.5 text-sm text-white">
           </div>
-          <div class="flex gap-3 text-center">
-            <div class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2">
-              <div class="text-xs text-slate-400">Players</div>
-              <div class="text-xl font-bold" id="drillTotalPlayers">-</div>
-            </div>
-            <div class="bg-purple-900 bg-opacity-40 border border-purple-700 rounded-lg px-4 py-2">
-              <div class="text-xs text-purple-300">Elite</div>
-              <div class="text-xl font-bold text-purple-400" id="drillEliteCount">-</div>
-            </div>
-            <div class="bg-blue-900 bg-opacity-40 border border-blue-700 rounded-lg px-4 py-2">
-              <div class="text-xs text-blue-300">Competitive</div>
-              <div class="text-xl font-bold text-blue-400" id="drillCompetitiveCount">-</div>
-            </div>
-            <div class="bg-green-900 bg-opacity-40 border border-green-700 rounded-lg px-4 py-2">
-              <div class="text-xs text-green-300">Active</div>
-              <div class="text-xl font-bold text-green-400" id="drillActiveCount">-</div>
-            </div>
-            <div class="bg-yellow-900 bg-opacity-40 border border-yellow-700 rounded-lg px-4 py-2">
-              <div class="text-xs text-yellow-300">Developing</div>
-              <div class="text-xl font-bold text-yellow-400" id="drillDevelopingCount">-</div>
-            </div>
+          <div id="drillSummaryBar" class="flex gap-4 text-sm">
+            <span class="text-slate-400">Total Players: <strong id="ds-total" class="text-white">0</strong></span>
+            <span class="text-green-400">Avg Performance: <strong id="ds-avg">0%</strong></span>
+            <span class="text-blue-400">Drills Completed: <strong id="ds-drills">0</strong></span>
           </div>
         </div>
-        <!-- Player Cards Grid -->
-        <div id="drillsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          <div class="col-span-full text-center py-12 text-slate-400">
-            <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
-            <p>Loading players...</p>
-          </div>
+
+        <!-- Player drill cards grid -->
+        <div id="drillsGrid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div class="text-slate-400 text-sm col-span-full">Loading players...</div>
         </div>
       </div>
 
@@ -162,15 +143,6 @@
 <script type="module">
   import { supabase } from '../js/supabaseClient.js';
   import { getPlayerProgressReport, checkAndPromotePlayer } from '../js/players.js';
-  import {
-    getAvailableDrills,
-    createDrillRecord,
-    getPlayerDrillProgress,
-    getPlayerDrillHistory,
-    getPerformanceLevelStyle,
-    getTeamDrillSummary,
-    getProgressTrendIndicator
-  } from '../js/drills.js';
 
   const TRAINING_VIEW_ROLES   = ['admin','team_manager','coach','player'];
   const TRAINING_MANAGE_ROLES = ['admin','team_manager','coach'];
@@ -212,6 +184,7 @@
     }
 
     document.getElementById('sessionDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('drillDate').value    = new Date().toISOString().split('T')[0];
     document.getElementById('attendanceDateLabel').textContent = formatDate(document.getElementById('sessionDate').value);
 
     await loadPlayers();
@@ -498,273 +471,6 @@
     }).join('');
   }
 
-  // ── DRILLS TAB ──────────────────────────────────────────────────
-  async function renderDrillsTab() {
-    if (!currentTeam) return;
-
-    try {
-      // Load team summary
-      const summary = await getTeamDrillSummary(currentTeam.id);
-      document.getElementById('drillTotalPlayers').textContent = summary.total_players;
-      document.getElementById('drillEliteCount').textContent = summary.elite_count;
-      document.getElementById('drillCompetitiveCount').textContent = summary.competitive_count;
-      document.getElementById('drillActiveCount').textContent = summary.active_count;
-      document.getElementById('drillDevelopingCount').textContent = summary.developing_count;
-
-      // Load players with drill performance
-      const { data: playersData, error } = await supabase
-        .from('players')
-        .select(`
-          *,
-          player_drill_performance(*)
-        `)
-        .eq('team_id', currentTeam.id)
-        .order('first_name');
-
-      if (error) throw error;
-
-      const grid = document.getElementById('drillsGrid');
-
-      if (!playersData || playersData.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full text-center py-12 text-slate-400">
-            <i class="fas fa-users text-4xl mb-4"></i>
-            <p>No players found</p>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = playersData.map(player => {
-        const perf = player.player_drill_performance?.[0] || {};
-        const score = perf.performance_score || 0;
-        const level = perf.performance_level || 'Beginner';
-        const levelStyle = getPerformanceLevelStyle(level);
-        const weeklyTrend = getProgressTrendIndicator(perf.weekly_progress || 0);
-        const monthlyTrend = getProgressTrendIndicator(perf.monthly_progress || 0);
-
-        return `
-          <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden hover:border-blue-500 transition">
-            <!-- Header -->
-            <div class="bg-gradient-to-r ${levelStyle.gradient} p-4 border-b border-slate-700">
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-3">
-                  ${player.photo_url
-                    ? `<img src="${player.photo_url}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg">`
-                    : `<div class="w-12 h-12 rounded-full bg-slate-700 border-2 border-white flex items-center justify-center text-slate-400 shadow-lg"><i class="fas fa-user text-lg"></i></div>`}
-                  <div>
-                    <h3 class="font-bold text-lg text-white">${player.first_name} ${player.last_name}</h3>
-                    <p class="text-sm text-white opacity-90">#${player.jersey_number} · ${player.position || 'N/A'}</p>
-                  </div>
-                </div>
-                <span class="px-3 py-1 ${levelStyle.bg} ${levelStyle.color} rounded-full text-xs font-semibold border ${levelStyle.border}">
-                  <i class="fas ${levelStyle.icon} mr-1"></i>${level}
-                </span>
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="p-4 space-y-3">
-              <!-- Performance Score -->
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span class="text-slate-400">Performance Score</span>
-                  <span class="font-bold ${levelStyle.color}">${score.toFixed(1)}%</span>
-                </div>
-                <div class="w-full bg-slate-700 rounded-full h-2.5">
-                  <div class="h-2.5 rounded-full transition-all duration-500 bg-gradient-to-r ${levelStyle.gradient}" 
-                       style="width: ${Math.min(score, 100)}%"></div>
-                </div>
-              </div>
-
-              <!-- Training Stats Grid -->
-              <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-slate-700 rounded p-2">
-                  <div class="text-xs text-slate-400">Training Days</div>
-                  <div class="text-lg font-bold">${perf.total_training_days || 0}</div>
-                </div>
-                <div class="bg-slate-700 rounded p-2">
-                  <div class="text-xs text-slate-400">Minutes</div>
-                  <div class="text-lg font-bold">${perf.training_minutes_total || 0}</div>
-                </div>
-                <div class="bg-slate-700 rounded p-2">
-                  <div class="text-xs text-slate-400">Drills</div>
-                  <div class="text-lg font-bold">${perf.total_drills_completed || 0}</div>
-                </div>
-              </div>
-
-              <!-- Analytics Breakdown -->
-              <div class="space-y-1 text-xs">
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Drill Completion</span>
-                  <span class="font-semibold">${(perf.drill_completion_rate || 0).toFixed(0)}%</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Attendance</span>
-                  <span class="font-semibold">${(perf.attendance_rate || 0).toFixed(0)}%</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Training Frequency</span>
-                  <span class="font-semibold">${(perf.training_frequency || 0).toFixed(1)}/week</span>
-                </div>
-              </div>
-
-              <!-- Progress Trends -->
-              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-700">
-                <div class="text-center">
-                  <div class="text-xs text-slate-400 mb-1">Weekly</div>
-                  <div class="${weeklyTrend.color} font-semibold text-sm">
-                    <i class="fas ${weeklyTrend.icon} mr-1"></i>${weeklyTrend.text}
-                  </div>
-                </div>
-                <div class="text-center">
-                  <div class="text-xs text-slate-400 mb-1">Monthly</div>
-                  <div class="${monthlyTrend.color} font-semibold text-sm">
-                    <i class="fas ${monthlyTrend.icon} mr-1"></i>${monthlyTrend.text}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Action Button -->
-              ${can(TRAINING_MANAGE_ROLES) ? `
-                <button onclick="showUpdateDrillModal('${player.id}')" 
-                        class="w-full bg-blue-600 hover:bg-blue-700 py-2.5 rounded-lg transition font-medium mt-2">
-                  <i class="fas fa-edit mr-2"></i>Update Drills
-                </button>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-    } catch (error) {
-      console.error('Error loading drills tab:', error);
-      showToast('Failed to load drills data', 'red');
-    }
-  }
-
-  // Show update drill modal
-  window.showUpdateDrillModal = async function(playerId) {
-    const player = players.find(p => p.id === playerId);
-    if (!player) return;
-
-    const availableDrills = getAvailableDrills(player.position);
-
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
-    modal.innerHTML = `
-      <div class="bg-slate-800 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-slate-800 px-6 pt-6 pb-3 border-b border-slate-700 flex justify-between items-center">
-          <div>
-            <h3 class="text-xl font-bold">Update Training Drills</h3>
-            <p class="text-sm text-slate-400">${player.first_name} ${player.last_name} - ${player.position}</p>
-          </div>
-          <button onclick="this.closest('.fixed').remove()" class="text-slate-400 hover:text-white">
-            <i class="fas fa-times text-xl"></i>
-          </button>
-        </div>
-
-        <form id="updateDrillForm" class="p-6 space-y-4">
-          <!-- Training Date -->
-          <div>
-            <label class="block text-sm font-medium mb-2">Training Date *</label>
-            <input type="date" name="training_date" required 
-                   value="${new Date().toISOString().split('T')[0]}"
-                   max="${new Date().toISOString().split('T')[0]}"
-                   class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-          </div>
-
-          <!-- Minutes Trained -->
-          <div>
-            <label class="block text-sm font-medium mb-2">Minutes Trained *</label>
-            <input type="number" name="minutes_trained" required min="1" max="300" 
-                   placeholder="e.g., 90"
-                   class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white">
-            <p class="text-xs text-slate-400 mt-1">Enter total training duration (1-300 minutes)</p>
-          </div>
-
-          <!-- Position (readonly) -->
-          <div>
-            <label class="block text-sm font-medium mb-2">Player Position</label>
-            <input type="text" name="player_position" readonly 
-                   value="${player.position}"
-                   class="w-full px-3 py-2 bg-slate-600 border border-slate-600 rounded text-slate-300">
-          </div>
-
-          <!-- Drills Completed -->
-          <div>
-            <label class="block text-sm font-medium mb-3">Drills Completed</label>
-            <div class="space-y-4">
-              ${Object.entries(availableDrills).map(([category, drills]) => `
-                <div class="bg-slate-700 rounded-lg p-4">
-                  <h4 class="font-semibold mb-3 text-blue-400">
-                    <i class="fas fa-dumbbell mr-2"></i>${category}
-                  </h4>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    ${drills.map(drill => `
-                      <label class="flex items-center gap-2 p-2 hover:bg-slate-600 rounded cursor-pointer transition">
-                        <input type="checkbox" name="drills" value="${drill}" 
-                               class="w-4 h-4 text-blue-600 bg-slate-600 border-slate-500 rounded focus:ring-2 focus:ring-blue-500">
-                        <span class="text-sm">${drill}</span>
-                      </label>
-                    `).join('')}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Notes -->
-          <div>
-            <label class="block text-sm font-medium mb-2">Notes (Optional)</label>
-            <textarea name="notes" rows="3" 
-                      placeholder="Add any additional notes about this training session..."
-                      class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"></textarea>
-          </div>
-
-          <!-- Submit -->
-          <div class="flex gap-2 pt-4">
-            <button type="submit" 
-                    class="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-lg font-medium transition">
-              <i class="fas fa-save mr-2"></i>Save Training Record
-            </button>
-            <button type="button" onclick="this.closest('.fixed').remove()" 
-                    class="flex-1 bg-slate-600 hover:bg-slate-700 py-3 rounded-lg font-medium transition">
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Handle form submission
-    modal.querySelector('#updateDrillForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      const selectedDrills = Array.from(formData.getAll('drills'));
-      
-      const drillData = {
-        training_date: formData.get('training_date'),
-        minutes_trained: parseInt(formData.get('minutes_trained')),
-        player_position: player.position,
-        drills_completed: selectedDrills,
-        notes: formData.get('notes') || null
-      };
-
-      try {
-        await createDrillRecord(playerId, drillData, currentUser.id);
-        modal.remove();
-        showToast('Training record saved successfully!', 'green');
-        await renderDrillsTab();
-      } catch (error) {
-        console.error('Error saving drill record:', error);
-        showToast('Failed to save training record: ' + error.message, 'red');
-      }
-    });
-  };
-
   // ── TABS ────────────────────────────────────────────────────────
   function switchTab(name) {
     document.querySelectorAll('.tab-btn').forEach(b => {
@@ -778,11 +484,359 @@
     document.getElementById('tab-' + name).classList.remove('hidden');
     if (name === 'progress') renderProgressTab();
     if (name === 'history')  renderHistoryTab();
+    if (name === 'drills')   renderDrillsTab();
   }
 
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.addEventListener('click', () => switchTab(b.dataset.tab));
   });
+
+  // ═══════════════════════════════════════════════════════════════
+  // PLAYER DRILLS & EXERCISES MODULE
+  // ═══════════════════════════════════════════════════════════════
+
+  // Position → drill categories map
+  const POSITION_DRILLS = {
+    // Category key, label, icon, positions it applies to, drills list, track fields
+    dribbling: {
+      label: 'Dribbling & Ball Control', icon: 'fa-futbol', color: 'blue',
+      positions: 'all',
+      drills: ['Slalom Cone Weaving','Fast Dribbling Drill','Dancing Sambas','Weak-Foot Cone Square'],
+      track: ['Completion Status','Time Spent (min)','Accuracy %']
+    },
+    passing: {
+      label: 'Passing & Receiving', icon: 'fa-arrows-alt', color: 'green',
+      positions: ['Winger','Striker','Full Back','Defender','Midfielder','Attacking Midfielder','Center Back','Defensive Midfielder'],
+      drills: ['Rondo (3v3 + 2, 4v2)','Up Back and Through','Double Passing','1-2 and Cross'],
+      track: ['Passing Accuracy %','Drill Completion','Repetition Count']
+    },
+    shooting: {
+      label: 'Shooting & Finishing', icon: 'fa-bullseye', color: 'red',
+      positions: ['Winger','Striker','Midfielder','Attacking Midfielder','Forward'],
+      drills: ['1v0 - 2v2 Finishing','2 Player Crossing Drill','Penalty Area Rondo','1v1 First Touch & Striker Accuracy'],
+      track: ['Goals Scored','Shot Accuracy %','Completion %']
+    },
+    defending: {
+      label: 'Defending & Tackling', icon: 'fa-shield-alt', color: 'yellow',
+      positions: ['Defender','Full Back','Center Back','Right Defender','Left Defender','Last Man'],
+      drills: ['1v1 Lose Your Man','Shed and Go','Ball Strip Drill','Interceptor'],
+      track: ['Defensive Success %','Interceptions','Tackling Accuracy %']
+    },
+    goalkeeper: {
+      label: 'Goalkeeper Drills', icon: 'fa-hands', color: 'purple',
+      positions: ['Goalkeeper'],
+      drills: ['Footwork and Handling','Goalkeeper Tennis','Distribution Drill'],
+      track: ['Save Accuracy %','Distribution Accuracy %','Reaction Training Completion']
+    },
+    agility: {
+      label: 'Agility & Conditioning', icon: 'fa-bolt', color: 'orange',
+      positions: 'all',
+      drills: ['Agility Ladder Drill','Sprint/Tack Back','Dribble Relay'],
+      track: ['Sprint Speed (m/s)','Endurance Score','Agility Completion %']
+    }
+  };
+
+  // In-memory drill records keyed by playerId
+  // Structure: drillRecords[playerId] = { duration, sprintDist, coneSets, attended, notes, drills:{catKey:{drillName:{done,value1,value2,value3}}} }
+  let drillRecords = {};
+  let drillDate = new Date().toISOString().split('T')[0];
+
+  function getCategoriesForPosition(position) {
+    return Object.entries(POSITION_DRILLS).filter(([, cat]) =>
+      cat.positions === 'all' || cat.positions.some(p => position?.toLowerCase().includes(p.toLowerCase()))
+    );
+  }
+
+  function calcPerformanceScore(rec) {
+    if (!rec) return 0;
+    let score = 0, weight = 0;
+    // Attendance (20%)
+    score += (rec.attended ? 20 : 0); weight += 20;
+    // Duration (15%) — 90 min = full
+    score += Math.min((rec.duration || 0) / 90, 1) * 15; weight += 15;
+    // Sprint distance (15%) — 3000m = full
+    score += Math.min((rec.sprintDist || 0) / 3000, 1) * 15; weight += 15;
+    // Cone sets (10%) — 10 sets = full
+    score += Math.min((rec.coneSets || 0) / 10, 1) * 10; weight += 10;
+    // Drill completion (40%) — count completed drills / total drills for position
+    const allDrills = Object.values(rec.drills || {}).flatMap(cat => Object.values(cat));
+    const total = allDrills.length;
+    const done  = allDrills.filter(d => d.done).length;
+    score += total > 0 ? (done / total) * 40 : 0; weight += 40;
+    return Math.round(score);
+  }
+
+  async function renderDrillsTab() {
+    const grid = document.getElementById('drillsGrid');
+    if (!players.length) {
+      grid.innerHTML = '<div class="text-slate-400 text-sm col-span-full">No players found.</div>';
+      return;
+    }
+    grid.innerHTML = '<div class="text-slate-400 text-sm col-span-full"><i class="fas fa-spinner fa-spin mr-2"></i>Loading drill records...</div>';
+
+    // Load existing analytics for this date to pre-fill attendance/fitness
+    const { data: existing } = await supabase
+      .from('player_analytics')
+      .select('player_id, fitness_score, availability_status, training_attendance_rate, date')
+      .in('player_id', players.map(p => p.id))
+      .eq('date', drillDate);
+
+    drillRecords = {};
+    // Pre-fill from saved analytics
+    (existing || []).forEach(row => {
+      drillRecords[row.player_id] = {
+        isDrillRecord: true,
+        attended: row.availability_status === 'available' || row.training_attendance_rate > 0,
+        duration: 0,
+        sprintDist: 0,
+        coneSets: 0,
+        drills: {}
+      };
+    });
+
+    // Ensure every player has a default record
+    players.forEach(p => {
+      if (!drillRecords[p.id]) {
+        drillRecords[p.id] = { isDrillRecord: true, attended: true, duration: 0, sprintDist: 0, coneSets: 0, notes: '', drills: {} };
+      }
+    });
+
+    grid.innerHTML = players.map(p => buildPlayerDrillCard(p)).join('');
+    updateDrillSummary();
+  }
+
+  function buildPlayerDrillCard(p) {
+    const rec = drillRecords[p.id];
+    const cats = getCategoriesForPosition(p.position);
+    const score = calcPerformanceScore(rec);
+    const scoreColor = score >= 80 ? 'green' : score >= 60 ? 'blue' : score >= 40 ? 'yellow' : 'red';
+    const canEdit = can(TRAINING_MANAGE_ROLES);
+
+    // Build drill category sections
+    const catHTML = cats.map(([catKey, cat]) => {
+      const catRec = rec.drills[catKey] || {};
+      const drillRows = cat.drills.map((drill, di) => {
+        const dr = catRec[drill] || { done: false, v1: '', v2: '', v3: '' };
+        return `
+          <div class="flex items-start gap-2 py-1.5 border-b border-slate-700 last:border-0">
+            <input type="checkbox" ${dr.done ? 'checked' : ''} ${canEdit ? '' : 'disabled'}
+              class="mt-0.5 drill-check" data-pid="${p.id}" data-cat="${catKey}" data-drill="${drill}"
+              onchange="drillCheckChange(this)">
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-medium text-slate-200 truncate">${drill}</div>
+              ${canEdit ? `
+              <div class="flex gap-1 mt-1 flex-wrap">
+                <input type="number" min="0" placeholder="${cat.track[0]}" value="${dr.v1}"
+                  class="drill-val w-24 bg-slate-900 border border-slate-600 rounded px-1.5 py-0.5 text-xs text-white"
+                  data-pid="${p.id}" data-cat="${catKey}" data-drill="${drill}" data-vi="v1"
+                  oninput="drillValChange(this)">
+                <input type="number" min="0" placeholder="${cat.track[1]}" value="${dr.v2}"
+                  class="drill-val w-24 bg-slate-900 border border-slate-600 rounded px-1.5 py-0.5 text-xs text-white"
+                  data-pid="${p.id}" data-cat="${catKey}" data-drill="${drill}" data-vi="v2"
+                  oninput="drillValChange(this)">
+                ${cat.track[1] ? `<input type="number" min="0" placeholder="${cat.track[1]}" value="${dr.v2}"
+                  class="drill-val w-24 bg-slate-900 border border-slate-600 rounded px-1.5 py-0.5 text-xs text-white"
+                  data-pid="${p.id}" data-cat="${catKey}" data-drill="${drill}" data-vi="v2"
+                  oninput="drillValChange(this)">` : ''}
+              </div>` : `<div class="text-xs text-slate-500 mt-0.5">${cat.track.join(' · ')}</div>`}
+            </div>
+            ${dr.done ? '<i class="fas fa-check-circle text-green-400 text-xs mt-0.5 flex-shrink-0"></i>' : ''}
+          </div>`;
+      }).join('');
+
+      const doneCount = cat.drills.filter(d => (catRec[d] || {}).done).length;
+      const catColor = cat.color;
+      return `
+        <div class="mb-3">
+          <button class="w-full flex items-center justify-between text-xs font-semibold text-${catColor}-300 bg-${catColor}-950 border border-${catColor}-800 rounded px-3 py-1.5 mb-1"
+            onclick="toggleCatSection('${p.id}-${catKey}')">
+            <span><i class="fas ${cat.icon} mr-1.5"></i>${cat.label}</span>
+            <span class="flex items-center gap-2">
+              <span class="bg-${catColor}-900 px-1.5 py-0.5 rounded">${doneCount}/${cat.drills.length}</span>
+              <i class="fas fa-chevron-down text-slate-400" id="chevron-${p.id}-${catKey}"></i>
+            </span>
+          </button>
+          <div id="cat-${p.id}-${catKey}" class="hidden px-2">${drillRows}</div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="bg-slate-800 rounded-lg border border-slate-700 flex flex-col" id="card-${p.id}">
+        <!-- Card Header -->
+        <div class="p-4 border-b border-slate-700">
+          <div class="flex items-center gap-3">
+            ${p.photo_url
+              ? `<img src="${p.photo_url}" class="w-12 h-12 rounded-full object-cover border border-slate-600 flex-shrink-0">`
+              : `<div class="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0"><i class="fas fa-user"></i></div>`}
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold truncate">${p.first_name} ${p.last_name}</div>
+              <div class="text-xs text-slate-400">#${p.jersey_number} · ${p.position || 'N/A'}</div>
+              <div class="text-xs text-slate-500">${currentTeam?.name || ''}</div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="text-2xl font-bold text-${scoreColor}-400" id="score-${p.id}">${score}%</div>
+              <div class="text-xs text-slate-400">Performance</div>
+            </div>
+          </div>
+          <!-- Performance bar -->
+          <div class="mt-3">
+            <div class="w-full bg-slate-700 rounded-full h-2">
+              <div id="scorebar-${p.id}" class="bg-${scoreColor}-500 h-2 rounded-full transition-all duration-500" style="width:${score}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Training Inputs -->
+        <div class="p-4 border-b border-slate-700">
+          <p class="text-xs font-semibold text-slate-400 uppercase mb-2">Daily Training Log</p>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-slate-400">Duration (min)</label>
+              <input type="number" min="0" max="300" value="${rec.duration || ''}"
+                class="w-full bg-slate-700 border border-slate-600 rounded px-2 py-1 text-sm text-white mt-0.5"
+                ${canEdit ? '' : 'disabled'}
+                data-pid="${p.id}" data-field="duration" oninput="drillFieldChange(this)">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400">Sprint Distance (m)</label>
+              <input type="number" min="0" value="${rec.sprintDist || ''}"
+                class="w-full bg-slate-700 border border-slate-600 rounded px-2 py-1 text-sm text-white mt-0.5"
+                ${canEdit ? '' : 'disabled'}
+                data-pid="${p.id}" data-field="sprintDist" oninput="drillFieldChange(this)">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400">Cone Sets</label>
+              <input type="number" min="0" value="${rec.coneSets || ''}"
+                class="w-full bg-slate-700 border border-slate-600 rounded px-2 py-1 text-sm text-white mt-0.5"
+                ${canEdit ? '' : 'disabled'}
+                data-pid="${p.id}" data-field="coneSets" oninput="drillFieldChange(this)">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400">Attendance</label>
+              <select class="w-full bg-slate-700 border border-slate-600 rounded px-2 py-1 text-sm text-white mt-0.5"
+                ${canEdit ? '' : 'disabled'}
+                data-pid="${p.id}" data-field="attended" onchange="drillFieldChange(this)">
+                <option value="true" ${rec.attended ? 'selected' : ''}>Present</option>
+                <option value="false" ${!rec.attended ? 'selected' : ''}>Absent</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drill Categories -->
+        <div class="p-4 flex-1 overflow-y-auto max-h-80">
+          <p class="text-xs font-semibold text-slate-400 uppercase mb-2">Position Drills</p>
+          ${catHTML}
+        </div>
+
+        <!-- Save button -->
+        ${canEdit ? `
+        <div class="p-4 border-t border-slate-700">
+          <button onclick="saveDrillRecord('${p.id}')"
+            class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded text-sm font-medium transition">
+            <i class="fas fa-save mr-2"></i>Save Training Record
+          </button>
+        </div>` : ''}
+      </div>`;
+  }
+
+  window.toggleCatSection = (id) => {
+    const el = document.getElementById('cat-' + id);
+    const ch = document.getElementById('chevron-' + id);
+    if (!el) return;
+    el.classList.toggle('hidden');
+    ch?.classList.toggle('fa-chevron-down');
+    ch?.classList.toggle('fa-chevron-up');
+  };
+
+  window.drillCheckChange = (el) => {
+    const { pid, cat, drill } = el.dataset;
+    if (!drillRecords[pid]) return;
+    if (!drillRecords[pid].drills[cat]) drillRecords[pid].drills[cat] = {};
+    if (!drillRecords[pid].drills[cat][drill]) drillRecords[pid].drills[cat][drill] = {};
+    drillRecords[pid].drills[cat][drill].done = el.checked;
+    refreshPlayerScore(pid);
+  };
+
+  window.drillValChange = (el) => {
+    const { pid, cat, drill, vi } = el.dataset;
+    if (!drillRecords[pid]) return;
+    if (!drillRecords[pid].drills[cat]) drillRecords[pid].drills[cat] = {};
+    if (!drillRecords[pid].drills[cat][drill]) drillRecords[pid].drills[cat][drill] = {};
+    drillRecords[pid].drills[cat][drill][vi] = el.value;
+  };
+
+  window.drillFieldChange = (el) => {
+    const { pid, field } = el.dataset;
+    if (!drillRecords[pid]) return;
+    const val = field === 'attended' ? el.value === 'true' : (el.tagName === 'TEXTAREA' ? el.value : parseFloat(el.value) || 0);
+    drillRecords[pid][field] = val;
+    refreshPlayerScore(pid);
+  };
+
+  function refreshPlayerScore(pid) {
+    const score = calcPerformanceScore(drillRecords[pid]);
+    const scoreColor = score >= 80 ? 'green' : score >= 60 ? 'blue' : score >= 40 ? 'yellow' : 'red';
+    const scoreEl = document.getElementById('score-' + pid);
+    const barEl   = document.getElementById('scorebar-' + pid);
+    if (scoreEl) { scoreEl.textContent = score + '%'; scoreEl.className = `text-2xl font-bold text-${scoreColor}-400`; }
+    if (barEl)   { barEl.style.width = score + '%'; barEl.className = `bg-${scoreColor}-500 h-2 rounded-full transition-all duration-500`; }
+    updateDrillSummary();
+  }
+
+  function updateDrillSummary() {
+    const total = players.length;
+    let totalScore = 0, totalDrills = 0;
+    players.forEach(p => {
+      const rec = drillRecords[p.id];
+      totalScore += calcPerformanceScore(rec);
+      totalDrills += Object.values(rec?.drills || {}).flatMap(c => Object.values(c)).filter(d => d.done).length;
+    });
+    document.getElementById('ds-total').textContent  = total;
+    document.getElementById('ds-avg').textContent    = total > 0 ? Math.round(totalScore / total) + '%' : '0%';
+    document.getElementById('ds-drills').textContent = totalDrills;
+  }
+
+  window.saveDrillRecord = async (pid) => {
+    const rec = drillRecords[pid];
+    if (!rec) return;
+    const score = calcPerformanceScore(rec);
+    const btn = document.querySelector(`#card-${pid} button[onclick]`);
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...'; }
+    try {
+      // Save to player_analytics — only columns that exist in the schema
+      const { error } = await supabase.from('player_analytics').upsert({
+        player_id: pid,
+        date: drillDate,
+        fitness_score: parseFloat((score / 10).toFixed(1)),
+        training_attendance_rate: rec.attended ? 100 : 0,
+        availability_status: rec.attended ? 'available' : 'restricted',
+        performance_trend: score >= 70 ? 'improving' : score >= 40 ? 'stable' : 'declining',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'player_id,date' });
+      if (error) throw error;
+
+      // Also update player_stats avg_performance_rating
+      await supabase.from('player_stats').upsert({
+        player_id: pid,
+        avg_performance_rating: parseFloat((score / 10).toFixed(1))
+      }, { onConflict: 'player_id' });
+
+      showToast('Training record saved!', 'green');
+    } catch (err) {
+      showToast('Error: ' + err.message, 'red');
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Training Record'; }
+    }
+  };
+
+  // Drill date change
+  document.getElementById('drillDate').addEventListener('change', (e) => {
+    drillDate = e.target.value;
+    renderDrillsTab();
+  });
+
+  // ═══════════════════════════════════════════════════════════════
 
   // ── HELPERS ─────────────────────────────────────────────────────
   function statusBadge(status) {
