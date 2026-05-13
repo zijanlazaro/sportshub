@@ -9,6 +9,7 @@ export default defineConfig({
     outDir: 'dist',
     minify: 'terser'
   },
+  cacheDir: 'C:\\Users\\ACER\\AppData\\Local\\vite-cache',
   optimizeDeps: {
     include: ['@supabase/supabase-js']
   }
